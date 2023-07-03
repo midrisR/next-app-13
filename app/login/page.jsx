@@ -19,7 +19,7 @@ export default function SignIn() {
       email: email.current,
       password: password.current,
       redirect: false,
-      callbackUrl: "/example",
+      callbackUrl: "/dashboard",
     });
     if (result?.error) {
       console.log(result);

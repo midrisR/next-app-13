@@ -3,5 +3,5 @@ export default withAuth({
   secret: process.env.AUTH_SECRET,
 });
 export const config = {
-  matcher: ["/profile", "/example"],
+  matcher: ["/profile", "/example", "/dashboard/:path*"],
 };
