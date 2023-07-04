@@ -49,24 +49,19 @@ export default function Page() {
   const onSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-    // formData.append("name", body.name);
-    // formData.append("categorieId", body.categorieId);
-    // formData.append("description", body.description);
-    // formData.append("brandId", body.brandId);
-    // formData.append("tag", body.tag);
-    // formData.append("metaDescription", body.metaDescription);
-    // formData.append("metaKeywords", body.metaKeywords);
-    // formData.append("published", body.published);
-    // for (const key of Object.keys(image)) {
-    //   formData.append("file", image[key]);
-    // }
-    formData.append("metaKeywords", "value 1");
-    formData.append("published", "value 2");
-    const res = await fetch("http://localhost:5000/api/product", {
-      method: "POST",
-      // headers: {
-      //   "Content-Type": "application/x-www-form-urlencoded",
-      // },
+    formData.append("name", body.name);
+    formData.append("categorieId", body.categorieId);
+    formData.append("description", body.description);
+    formData.append("brandId", body.brandId);
+    formData.append("tag", body.tag);
+    formData.append("metaDescription", body.metaDescription);
+    formData.append("metaKeywords", body.metaKeywords);
+    formData.append("published", body.published);
+    for (const key of Object.keys(image)) {
+      formData.append("file", image[key]);
+    }
+    const res = await fetch(`http://localhost:5000/api/product/${id}`, {
+      method: "PUT",
       body: formData,
     });
     const result = await res.json();
