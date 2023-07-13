@@ -14,13 +14,19 @@ export default function InputFile({ label, name, preview, onChange }) {
         multiple
         onChange={onChange}
       />
-      {/* {preview && (
+      {preview && (
         <div className="flex gap-4 mt-4">
           {preview.map((img, i) => (
-            <img key={i} src={img} alt="dummy" width="200" height="200" />
+            <img
+              key={i}
+              src={URL.createObjectURL(img)}
+              alt="dummy"
+              width="200"
+              height="200"
+            />
           ))}
         </div>
-      )} */}
+      )}
     </div>
   );
 }

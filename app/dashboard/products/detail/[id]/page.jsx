@@ -11,7 +11,7 @@ export default function Page() {
   const { products, categories, brands } = useContext(GlobalContext);
   const { id } = useParams();
   const [body, setBody] = useState([]);
-  const [image, setImage] = useState({ preview: "" });
+  const [image, setImage] = useState([]);
   const handleChange = (e) => {
     setBody((state) => ({
       ...state,
@@ -19,15 +19,11 @@ export default function Page() {
     }));
   };
   const hanldeInputFile = (e) => {
-    let images = [];
     let imgData = [];
     for (let i = 0; i < e.target.files.length; i++) {
-      images.push(URL.createObjectURL(e.target.files[i]));
       imgData.push(e.target.files[i]);
     }
-    if (e.target.files.length) {
-      setImage(e.target.files);
-    }
+    setImage(imgData);
   };
 
   useEffect(() => {
@@ -58,7 +54,8 @@ export default function Page() {
     formData.append("metaKeywords", body.metaKeywords);
     formData.append("published", body.published);
     for (const key of Object.keys(image)) {
-      formData.append("file", image[key]);
+      console.log(image[key]);
+      formData.append("images", image[key]);
     }
     const res = await fetch(`http://localhost:5000/api/product/${id}`, {
       method: "PUT",
@@ -142,12 +139,20 @@ export default function Page() {
               </div>
             </div>
             <InputFile
-              name="image"
+              name="images"
               label="Image"
               onChange={hanldeInputFile}
               preview={image}
             />
-
+            <div className="flex gap-4">
+              {products?.Images.map(({ name }) => (
+                <img
+                  key={name}
+                  src={` http://localhost:5000/images/${name}`}
+                  width={100}
+                />
+              ))}
+            </div>
             <div>
               <label htmlFor="message">Description</label>
               <textarea
