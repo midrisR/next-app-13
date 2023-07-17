@@ -10,7 +10,6 @@ export default function Pagination({
   renderPageLink,
 }) {
   const pages = usePagination(totalItems, currentPage, itemsPerPage);
-
   return (
     <div className="flex items-center justify-center my-8">
       {pages.map((pageNumber, i) => {
@@ -29,9 +28,9 @@ export default function Pagination({
               pageNumber === currentPage
                 ? "text-white bg-purple-500"
                 : "text-black"
-            } px-4 py-2 mx-1 rounded text-sm font-semibold no-underline`}
+            } px-4 py-2 mx-1 rounded text-sm font-semibold no-`}
           >
-            {pageNumber}
+            {pageNumber ? pageNumber : null}
           </Link>
         );
       })}

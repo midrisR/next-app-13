@@ -1,9 +1,14 @@
 export default (state, action) => {
   switch (action.type) {
-    case "GET_PRODUCTS":
+    case "GET_ALL_PRODUCT":
       return {
         ...state,
         products: action.payload,
+      };
+    case "GET_PRODUCTS_BY_ID":
+      return {
+        ...state,
+        product: action.payload,
       };
     case "GET_CATEGORIES":
       return {

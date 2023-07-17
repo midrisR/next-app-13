@@ -1,23 +1,50 @@
 "use client";
-import Image from "next/image";
-import { useParams } from "next/navigation";
-import { useContext, useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { useContext, useState, useEffect, useCallback } from "react";
 import DashboardLayout from "@/components/dashboard";
 import { GlobalContext } from "@/hooks/useContext";
 import Input from "@/components/form/input";
 import Select from "@/components/form/select";
 import InputFile from "@/components/form/inputFile";
+import { useSession } from "next-auth/react";
+import Loading from "@/components/loading";
+import { HiTrash } from "react-icons/hi";
 export default function Page() {
-  const { products, categories, brands } = useContext(GlobalContext);
+  const { data: session, status } = useSession();
+  const {
+    product,
+    categories,
+    brands,
+    getProductById,
+    getCategorie,
+    getBrand,
+  } = useContext(GlobalContext);
+  const router = useRouter();
   const { id } = useParams();
   const [body, setBody] = useState([]);
   const [image, setImage] = useState([]);
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      getProductById(id);
+      getCategorie();
+      getBrand();
+    }
+  }, [status]);
+
   const handleChange = (e) => {
     setBody((state) => ({
       ...state,
       [e.target.name]: e.target.value,
     }));
   };
+  const handleSelec = (name, value) => {
+    setBody((state) => ({
+      ...state,
+      [name]: value,
+    }));
+  };
+
   const hanldeInputFile = (e) => {
     let imgData = [];
     for (let i = 0; i < e.target.files.length; i++) {
@@ -27,20 +54,20 @@ export default function Page() {
   };
 
   useEffect(() => {
-    if (products) {
+    if (product) {
       setBody((prev) => ({
         ...prev,
-        name: products?.name,
-        categorieId: products?.categorieId,
-        brandId: products?.brandId,
-        description: products?.description,
-        tag: products?.tag,
-        metaDescription: products?.metaDescription,
-        metaKeywords: products?.metaKeywords,
-        published: products?.published,
+        name: product?.name,
+        categorieId: product?.categorieId,
+        brandId: product?.brandId,
+        description: product?.description,
+        tag: product?.tag,
+        metaDescription: product?.metaDescription,
+        metaKeywords: product?.metaKeywords,
+        published: product?.published,
       }));
     }
-  }, [products]);
+  }, [product]);
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -54,7 +81,6 @@ export default function Page() {
     formData.append("metaKeywords", body.metaKeywords);
     formData.append("published", body.published);
     for (const key of Object.keys(image)) {
-      console.log(image[key]);
       formData.append("images", image[key]);
     }
     const res = await fetch(`http://localhost:5000/api/product/${id}`, {
@@ -62,13 +88,14 @@ export default function Page() {
       body: formData,
     });
     const result = await res.json();
-    console.log(result);
+    if (result.success) {
+      router.push("/dashboard/products");
+    }
   };
+
   return (
     <DashboardLayout>
-      {!products ? (
-        <p>loading</p>
-      ) : (
+      {product !== null ? (
         <div className="rounded-lg bg-white p-8 shadow-lg lg:col-span-3 lg:p-12">
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-2">
@@ -77,14 +104,14 @@ export default function Page() {
                 name="name"
                 type="text"
                 onChange={handleChange}
-                defaultValue={products?.name}
+                defaultValue={product.name}
               />
               <Input
                 label="Meta Description"
                 name="metaDescription"
                 type="text"
                 onChange={handleChange}
-                defaultValue={products?.metaDescription}
+                defaultValue={product.metaDescription}
               />
             </div>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -93,14 +120,14 @@ export default function Page() {
                 name="tag"
                 type="text"
                 onChange={handleChange}
-                defaultValue={products?.tag}
+                defaultValue={product.tag}
               />
               <Input
                 label="Meta Keywords"
                 name="metaKeywords"
                 type="text"
                 onChange={handleChange}
-                defaultValue={products?.metaKeywords}
+                defaultValue={product.metaKeywords}
               />
             </div>
 
@@ -109,16 +136,16 @@ export default function Page() {
                 label="Categorie"
                 name="categorieId"
                 data={categories}
-                onChange={handleChange}
-                defaultValue={products?.categorieId}
+                onChange={handleSelec}
+                defaultValue={product?.categorieId}
               />
 
               <Select
                 label="Brand"
                 name="brandId"
                 data={brands}
-                onChange={handleChange}
-                defaultValue={products?.brandId}
+                onChange={handleSelec}
+                defaultValue={product?.brandId}
               />
 
               <div>
@@ -129,8 +156,8 @@ export default function Page() {
                   htmlFor="published"
                   name="published"
                   className="mt-1.5 w-full rounded-lg border-gray-300 text-gray-700 sm:text-sm"
-                  defaultValue={Number(products?.published)}
-                  onChange={handleChange}
+                  defaultValue={Number(product.published)}
+                  onChange={handleSelec}
                 >
                   <option disabled>Please select</option>
                   <option value={0}>false</option>
@@ -145,14 +172,18 @@ export default function Page() {
               preview={image}
             />
             <div className="flex gap-4">
-              {products?.Images.map(({ name }) => (
-                <img
-                  key={name}
-                  src={` http://localhost:5000/images/${name}`}
-                  width={100}
-                />
+              {product.Images.map(({ id, name }) => (
+                <div className="flex" key={id}>
+                  <img
+                    key={name}
+                    src={` http://localhost:5000/images/${product.id}/${name}`}
+                    width={140}
+                  />
+                  <HiTrash className="text-red-500 cursor-pointer" size="22" />
+                </div>
               ))}
             </div>
+            {JSON.stringify(product.Images, null, 2)}
             <div>
               <label htmlFor="message">Description</label>
               <textarea
@@ -162,7 +193,7 @@ export default function Page() {
                 rows="8"
                 id="description"
                 onChange={handleChange}
-                defaultValue={products?.description}
+                defaultValue={product.description}
               ></textarea>
             </div>
 
@@ -175,8 +206,9 @@ export default function Page() {
               </button>
             </div>
           </div>
-          <pre> {JSON.stringify(products, null, 2)}</pre>
         </div>
+      ) : (
+        <Loading />
       )}
     </DashboardLayout>
   );

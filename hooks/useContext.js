@@ -1,31 +1,38 @@
 "use client";
-import { createContext, useReducer, useEffect, useState } from "react";
+import { createContext, useReducer } from "react";
 import { useSession } from "next-auth/react";
-import { useParams } from "next/navigation";
 import AppReducer from "./appReducer";
 
 const initialState = {
   products: null,
+  product: null,
   categories: null,
   brands: null,
 };
 
+const PER_PAGE = 10;
+
 export const GlobalContext = createContext(initialState);
 export const GlobalProvider = ({ children }) => {
   const [state, dispatch] = useReducer(AppReducer, initialState);
-  const [loading, setLoading] = useState(false);
-  const { data: session, status } = useSession();
-  const { id } = useParams();
+  const { data: session } = useSession();
 
-  useEffect(() => {
-    if (status === "authenticated") {
-      setLoading(true);
-      getProductById(id);
-      getCategorie();
-      getBrand();
-    }
-    setLoading(false);
-  }, [session, status, id]);
+  async function getAllProduct(page) {
+    const data = await fetch(
+      `http://localhost:5000/api/product?page=${page}&perPage=${PER_PAGE}`,
+      {
+        headers: {
+          Authorization: session?.accessToken,
+        },
+      },
+      { next: { revalidate: 10 } }
+    );
+    const { products } = await data.json();
+    dispatch({
+      type: "GET_ALL_PRODUCT",
+      payload: products,
+    });
+  }
 
   async function getProductById(param) {
     const res = await fetch(`http://localhost:5000/api/product/${param}`, {
@@ -35,7 +42,7 @@ export const GlobalProvider = ({ children }) => {
     });
     const product = await res.json();
     dispatch({
-      type: "GET_PRODUCTS",
+      type: "GET_PRODUCTS_BY_ID",
       payload: product,
     });
   }
@@ -66,8 +73,28 @@ export const GlobalProvider = ({ children }) => {
     });
   }
 
+  async function deleteProduct(id) {
+    const res = await fetch(`http://localhost:5000/api/product/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: session?.accessToken,
+      },
+    });
+    const result = await res.json();
+    return result;
+  }
+
   return (
-    <GlobalContext.Provider value={{ ...state, loading }}>
+    <GlobalContext.Provider
+      value={{
+        ...state,
+        getAllProduct,
+        getProductById,
+        getCategorie,
+        getBrand,
+        deleteProduct,
+      }}
+    >
       {children}
     </GlobalContext.Provider>
   );

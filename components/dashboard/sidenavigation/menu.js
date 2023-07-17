@@ -12,14 +12,14 @@ const data = [
     link: "/dashboard/products",
   },
   {
-    title: "merk",
-    icon: <FaTags />,
-    link: "/dashboard/merk",
+    title: "categorie",
+    icon: <FaQrcode />,
+    link: "/dashboard/categorie",
   },
   {
-    title: "type",
-    icon: <FaQrcode />,
-    link: "/dashboard/type",
+    title: "brand",
+    icon: <FaTags />,
+    link: "/dashboard/brand",
   },
   {
     title: "user",
