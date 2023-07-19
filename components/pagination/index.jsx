@@ -1,28 +1,19 @@
-import styles from "./pagination.module.css";
+"use client";
 const Pagination = ({ items, pageSize, currentPage, onPageChange }) => {
   const pagesCount = Math.ceil(items / pageSize);
-  if (pagesCount === 1) {
-    return null;
-  }
   const pages = Array.from({ length: pagesCount }, (_, i) => i + 1);
-  console.log(pages);
   return (
     <div>
-      {" "}
-      <ul className={styles.pagination}>
+      <ul className="flex gap-3 py-4 justify-center bg-white">
         {pages.map((page) => (
           <li
             key={page}
-            className={
-              page === currentPage ? styles.pageItemActive : styles.pageItem
-            }
+            className={`px-4 py-1 rounded cursor-pointer font-semibold ${
+              page === currentPage ? "bg-blue-400 text-white" : "text-slate-800"
+            }`}
+            onClick={() => onPageChange(page)}
           >
-            <span
-              className={styles.pageLink}
-              onClick={() => onPageChange(page)}
-            >
-              {page}
-            </span>
+            {page}
           </li>
         ))}
       </ul>
@@ -30,4 +21,3 @@ const Pagination = ({ items, pageSize, currentPage, onPageChange }) => {
   );
 };
 export default Pagination;
-1;

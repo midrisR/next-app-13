@@ -2,7 +2,7 @@ export default function Loading() {
   return (
     <div className="flex gap-4 items-center justify-center absolute top-1/2 left-1/2">
       <svg
-        className="animate-spin -ml-1 mr-3 h-20 w-20 text-salte-400"
+        className="animate-spin -ml-1 mr-3 h-12 w-12 text-salte-400"
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"

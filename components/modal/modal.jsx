@@ -1,9 +1,11 @@
 "use client";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useState } from "react";
-import { FaTrashCan } from "react-icons/fa6";
-export default function ModalDelete({ handleDelete }) {
-  let [isOpen, setIsOpen] = useState(false);
+import { FaEye } from "react-icons/fa6";
+import Input from "../form/input";
+export default function Modal({ data, id }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [value, setValue] = useState("");
 
   function closeModal() {
     setIsOpen(false);
@@ -11,6 +13,8 @@ export default function ModalDelete({ handleDelete }) {
 
   function openModal() {
     setIsOpen(true);
+    const filter = data.find((key) => key.id === id);
+    setValue(filter.name);
   }
 
   return (
@@ -19,9 +23,9 @@ export default function ModalDelete({ handleDelete }) {
         <button
           type="button"
           onClick={openModal}
-          className="rounded-md bg-red-500 px-4 py-2 text-sm font-medium text-white"
+          className="rounded-md bg-blue-500 px-4 py-2 text-sm font-medium text-white"
         >
-          <FaTrashCan />
+          <FaEye />
         </button>
       </div>
 
@@ -51,17 +55,14 @@ export default function ModalDelete({ handleDelete }) {
                 leaveTo="opacity-0 scale-95"
               >
                 <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                  <Dialog.Title
-                    as="h3"
-                    className="text-lg font-medium leading-6 text-gray-900"
-                  >
-                    Are you sure delete this product?
-                  </Dialog.Title>
                   <div className="mt-2">
-                    <p className="text-sm text-gray-500">
-                      Product will be permanently removed. This action cannot be
-                      undone.
-                    </p>
+                    <Input
+                      label="Name"
+                      name="name"
+                      type="text"
+                      defaultValue={value}
+                      onChange={(e) => setValue(e.target.value)}
+                    />
                   </div>
 
                   <div className="mt-4 flex gap-1 justify-end">
@@ -71,16 +72,6 @@ export default function ModalDelete({ handleDelete }) {
                       onClick={closeModal}
                     >
                       Cencel
-                    </button>
-                    <button
-                      type="button"
-                      className="inline-flex justify-center rounded-md border border-transparent bg-red-100 px-4 py-2 text-sm font-medium text-red-900 hover:bg-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
-                      onClick={() => {
-                        handleDelete();
-                        closeModal();
-                      }}
-                    >
-                      Delete
                     </button>
                   </div>
                 </Dialog.Panel>

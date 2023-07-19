@@ -1,8 +1,20 @@
+"use client";
 import Link from "next/link";
-import { FaEye, FaTrashCan } from "react-icons/fa6";
-import { useParams } from "next/navigation";
-export default function Tbody({ data, openModal }) {
-  const { id } = useParams();
+import { useContext } from "react";
+import { GlobalContext } from "@/hooks/useContext";
+import { useRouter } from "next/navigation";
+import { FaEye } from "react-icons/fa6";
+import ModalDelete from "../modal/delete";
+
+export default function Tbody({ data }) {
+  const { deleteProduct } = useContext(GlobalContext);
+  const router = useRouter();
+
+  const handleDelete = (id) => {
+    deleteProduct(id);
+    router.refresh();
+  };
+
   return (
     <tbody className="divide-y divide-gray-200">
       {data?.map((val, i) => (
@@ -23,12 +35,10 @@ export default function Tbody({ data, openModal }) {
             >
               <FaEye />
             </Link>
-            <button
-              className="inline-flex items-center rounded bg-red-500 px-4 py-2 text-xs font-medium text-white hover:bg-red-600"
-              onClick={() => openModal(val.id)}
-            >
-              <FaTrashCan />
-            </button>
+            <ModalDelete
+              id={val.id}
+              handleDelete={() => handleDelete(val.id)}
+            />
           </td>
         </tr>
       ))}

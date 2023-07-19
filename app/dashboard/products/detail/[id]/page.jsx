@@ -18,11 +18,15 @@ export default function Page() {
     getProductById,
     getCategorie,
     getBrand,
+    deleteImage,
   } = useContext(GlobalContext);
   const router = useRouter();
   const { id } = useParams();
   const [body, setBody] = useState([]);
   const [image, setImage] = useState([]);
+  const removeImg = async (img) => {
+    await deleteImage(img);
+  };
 
   useEffect(() => {
     if (status === "authenticated") {
@@ -38,7 +42,7 @@ export default function Page() {
       [e.target.name]: e.target.value,
     }));
   };
-  const handleSelec = (name, value) => {
+  const handleSelect = (name, value) => {
     setBody((state) => ({
       ...state,
       [name]: value,
@@ -136,7 +140,7 @@ export default function Page() {
                 label="Categorie"
                 name="categorieId"
                 data={categories}
-                onChange={handleSelec}
+                onChange={handleSelect}
                 defaultValue={product?.categorieId}
               />
 
@@ -144,7 +148,7 @@ export default function Page() {
                 label="Brand"
                 name="brandId"
                 data={brands}
-                onChange={handleSelec}
+                onChange={handleSelect}
                 defaultValue={product?.brandId}
               />
 
@@ -157,7 +161,7 @@ export default function Page() {
                   name="published"
                   className="mt-1.5 w-full rounded-lg border-gray-300 text-gray-700 sm:text-sm"
                   defaultValue={Number(product.published)}
-                  onChange={handleSelec}
+                  onChange={handleSelect}
                 >
                   <option disabled>Please select</option>
                   <option value={0}>false</option>
@@ -176,10 +180,14 @@ export default function Page() {
                 <div className="flex" key={id}>
                   <img
                     key={name}
-                    src={` http://localhost:5000/images/${product.id}/${name}`}
+                    src={` http://localhost:5000/images/item/${product.id}/${name}`}
                     width={140}
                   />
-                  <HiTrash className="text-red-500 cursor-pointer" size="22" />
+                  <HiTrash
+                    className="text-red-500 cursor-pointer"
+                    size="22"
+                    onClick={() => removeImg(id)}
+                  />
                 </div>
               ))}
             </div>

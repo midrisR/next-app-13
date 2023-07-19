@@ -1,5 +1,10 @@
 export default (state, action) => {
   switch (action.type) {
+    case "HANDLE_MODAL":
+      return {
+        ...state,
+        open: action.payload,
+      };
     case "GET_ALL_PRODUCT":
       return {
         ...state,

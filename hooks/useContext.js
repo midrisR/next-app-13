@@ -1,13 +1,14 @@
 "use client";
-import { createContext, useReducer } from "react";
+import { createContext, useReducer, useMemo } from "react";
 import { useSession } from "next-auth/react";
 import AppReducer from "./appReducer";
-
 const initialState = {
   products: null,
   product: null,
   categories: null,
   brands: null,
+  users: null,
+  open: false,
 };
 
 const PER_PAGE = 10;
@@ -17,6 +18,13 @@ export const GlobalProvider = ({ children }) => {
   const [state, dispatch] = useReducer(AppReducer, initialState);
   const { data: session } = useSession();
 
+  const handleModal = () => {
+    dispatch({
+      type: "HANDLE_MODAL",
+      payload: !state.open,
+    });
+  };
+
   async function getAllProduct(page) {
     const data = await fetch(
       `http://localhost:5000/api/product?page=${page}&perPage=${PER_PAGE}`,
@@ -24,8 +32,7 @@ export const GlobalProvider = ({ children }) => {
         headers: {
           Authorization: session?.accessToken,
         },
-      },
-      { next: { revalidate: 10 } }
+      }
     );
     const { products } = await data.json();
     dispatch({
@@ -74,7 +81,15 @@ export const GlobalProvider = ({ children }) => {
   }
 
   async function deleteProduct(id) {
-    const res = await fetch(`http://localhost:5000/api/product/${id}`, {
+    await fetch(`http://localhost:5000/api/product/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: session?.accessToken,
+      },
+    });
+  }
+  async function deleteImage(id) {
+    const res = await fetch(`http://localhost:5000/api/image/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: session?.accessToken,
@@ -88,11 +103,13 @@ export const GlobalProvider = ({ children }) => {
     <GlobalContext.Provider
       value={{
         ...state,
+        handleModal,
         getAllProduct,
         getProductById,
         getCategorie,
         getBrand,
         deleteProduct,
+        deleteImage,
       }}
     >
       {children}
