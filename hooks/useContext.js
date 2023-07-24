@@ -80,23 +80,32 @@ export const GlobalProvider = ({ children }) => {
     });
   }
 
-  async function deleteProduct(id) {
+  async function deleteProduct(id, token) {
     await fetch(`http://localhost:5000/api/product/${id}`, {
       method: "DELETE",
       headers: {
-        Authorization: session?.accessToken,
+        Authorization: token,
       },
     });
   }
-  async function deleteImage(id) {
+  async function deleteImage(id, token) {
     const res = await fetch(`http://localhost:5000/api/image/${id}`, {
       method: "DELETE",
       headers: {
-        Authorization: session?.accessToken,
+        Authorization: token,
       },
     });
     const result = await res.json();
     return result;
+  }
+
+  async function deleteCategorie(id) {
+    await fetch(`http://localhost:5000/api/categorie/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: session?.accessToken,
+      },
+    });
   }
 
   return (
@@ -110,6 +119,7 @@ export const GlobalProvider = ({ children }) => {
         getBrand,
         deleteProduct,
         deleteImage,
+        deleteCategorie,
       }}
     >
       {children}

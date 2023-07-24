@@ -1,11 +1,9 @@
 "use client";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useState } from "react";
-import { FaEye } from "react-icons/fa6";
-import Input from "../form/input";
-export default function Modal({ data, id }) {
+
+export default function Modal({ children, onSubmit, icon, width }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [value, setValue] = useState("");
 
   function closeModal() {
     setIsOpen(false);
@@ -13,8 +11,6 @@ export default function Modal({ data, id }) {
 
   function openModal() {
     setIsOpen(true);
-    const filter = data.find((key) => key.id === id);
-    setValue(filter.name);
   }
 
   return (
@@ -25,7 +21,7 @@ export default function Modal({ data, id }) {
           onClick={openModal}
           className="rounded-md bg-blue-500 px-4 py-2 text-sm font-medium text-white"
         >
-          <FaEye />
+          {icon}
         </button>
       </div>
 
@@ -54,21 +50,26 @@ export default function Modal({ data, id }) {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                  <div className="mt-2">
-                    <Input
-                      label="Name"
-                      name="name"
-                      type="text"
-                      defaultValue={value}
-                      onChange={(e) => setValue(e.target.value)}
-                    />
-                  </div>
+                <Dialog.Panel
+                  className={`${
+                    width ? width : "max-w-md"
+                  } transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all`}
+                >
+                  <div className="mt-2">{children}</div>
 
                   <div className="mt-4 flex gap-1 justify-end">
                     <button
                       type="button"
                       className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                      onClick={(e) => {
+                        onSubmit(e);
+                      }}
+                    >
+                      Submit
+                    </button>
+                    <button
+                      type="button"
+                      className="inline-flex justify-center rounded-md border border-transparent bg-red-100 px-4 py-2 text-sm font-medium text-red-900 hover:bg-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
                       onClick={closeModal}
                     >
                       Cencel

@@ -1,34 +1,35 @@
-"use client";
 import { Listbox, Transition } from "@headlessui/react";
-import { HiChevronUpDown, HiCheck } from "react-icons/hi2";
 import { useState } from "react";
+import { HiChevronUpDown, HiCheck } from "react-icons/hi2";
+import { getFieldError, getMessageError } from "./error";
+
 export default function Select({
   label,
   name,
   data,
-  defaultValue,
   onChange,
-  values,
+  defaultValue,
+  error,
 }) {
   const [value, setValue] = useState(defaultValue);
   const filter = data?.find(({ id }) => id === value);
+
   const handleChange = (v) => {
     setValue(v);
     onChange(name, v);
   };
-
   return (
     <div>
       <label className="block text-sm font-medium text-gray-900">{label}</label>
-      <Listbox value={values} onChange={(val) => handleChange(val)}>
+      <Listbox value={value} onChange={(val) => handleChange(val)}>
         <div className="relative mt-1">
-          <Listbox.Button className="ring-1 ring-slate-500 relative w-full cursor-default rounded-lg bg-white py-3 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm">
+          <Listbox.Button
+            className={`ring-1 ${
+              getFieldError(name, error) ? "ring-red-400" : "border-gray-500"
+            } relative w-full cursor-default rounded-lg bg-white py-3 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm`}
+          >
             <span className="block truncate">
-              {defaultValue
-                ? filter?.name
-                : values === ""
-                ? "select published"
-                : filter?.name}
+              {value === "" ? "select published" : filter?.name}
             </span>
             <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
               <HiChevronUpDown
@@ -56,7 +57,7 @@ export default function Select({
                   <>
                     <span
                       className={`block truncate ${
-                        defaultValue === v.name ? "font-medium" : "font-normal"
+                        value === v.name ? "font-medium" : "font-normal"
                       }`}
                     >
                       {v.name}
@@ -73,28 +74,7 @@ export default function Select({
           </Transition>
         </div>
       </Listbox>
+      {getMessageError(name, error)}
     </div>
-
-    // <div>
-    //   <label htmlFor={name} className="block text-sm font-medium text-gray-900">
-    //     {label}
-    //   </label>
-
-    //   <select
-    //     name={name}
-    //     className="mt-1.5 w-full rounded-lg border-gray-300 text-gray-700 sm:text-sm"
-    //     defaultValue={defaultValue}
-    //     onChange={onChange}
-    //   >
-    //     <option>Please select</option>
-    //     {data?.map((value, i) => {
-    //       return (
-    //         <option key={i} value={value.id}>
-    //           {value.name}
-    //         </option>
-    //       );
-    //     })}
-    //   </select>
-    // </div>
   );
 }

@@ -2,6 +2,7 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useState } from "react";
 import { FaTrashCan } from "react-icons/fa6";
+
 export default function ModalDelete({ handleDelete }) {
   let [isOpen, setIsOpen] = useState(false);
 
@@ -55,7 +56,7 @@ export default function ModalDelete({ handleDelete }) {
                     as="h3"
                     className="text-lg font-medium leading-6 text-gray-900"
                   >
-                    Are you sure delete this product?
+                    Are you sure delete it?
                   </Dialog.Title>
                   <div className="mt-2">
                     <p className="text-sm text-gray-500">

@@ -1,10 +1,11 @@
+import { getFieldError, getMessageError } from "./error";
 export default function Input({
   label,
   name,
   type,
-  defaultValue,
   onChange,
-  value,
+  error,
+  ...props
 }) {
   return (
     <div>
@@ -12,13 +13,15 @@ export default function Input({
         {label}
       </label>
       <input
-        className="w-full shadow-lg rounded-lg border border-gray-400 p-3 text-sm mt-2"
+        className={`w-full shadow-lg rounded-lg border p-3 text-sm mt-2 ${
+          getFieldError(name, error) ? "border-red-400 " : "border-gray-400 "
+        }`}
         name={name}
         type={type}
-        value={value}
-        defaultValue={defaultValue}
+        {...props}
         onChange={onChange}
       />
+      {getMessageError(name, error)}
     </div>
   );
 }
