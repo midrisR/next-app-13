@@ -4,6 +4,7 @@ import Modal from "@/components/modal/modal";
 import Input from "@/components/form/input";
 import Select from "@/components/form/select";
 import InputFile from "@/components/form/inputFile";
+import Textarea from "@/components/form/textarea";
 import { useRouter } from "next/navigation";
 export default function Create({ categories, brands, accessToken }) {
   const [body, setBody] = useState([]);
@@ -162,17 +163,11 @@ export default function Create({ categories, brands, accessToken }) {
               preview={image}
             />
 
-            <div>
-              <label htmlFor="message">Description</label>
-              <textarea
-                className="w-full rounded-lg border-gray-200 p-3 text-sm"
-                placeholder="description"
-                name="description"
-                rows="8"
-                id="description"
-                onChange={handleChange}
-              ></textarea>
-            </div>
+            <Textarea
+              name="description"
+              onChange={handleChange}
+              error={error?.error}
+            />
           </div>
         </div>
       </Modal>

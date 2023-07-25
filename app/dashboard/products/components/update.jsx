@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import Input from "@/components/form/input";
 import Select from "@/components/form/select";
 import InputFile from "@/components/form/inputFile";
+import Textarea from "@/components/form/textarea";
 import { HiTrash } from "react-icons/hi";
 export default function Update({
   productId,
@@ -16,6 +17,7 @@ export default function Update({
   const { id, Images, ...rest } = product;
   const [body, setBody] = useState([]);
   const [image, setImage] = useState([]);
+  const [error, setError] = useState({});
 
   useEffect(() => {
     for (const key in rest) {
@@ -71,7 +73,10 @@ export default function Update({
       },
     });
     const result = await res.json();
-    if (result.success) {
+    if (!result.success) {
+      setError(result);
+    } else {
+      setImage([]);
       router.push("/dashboard/products");
     }
   };
@@ -85,6 +90,7 @@ export default function Update({
     });
     const res = await remove.json();
     if (res.success) {
+      setImage([]);
       router.refresh();
     }
   };
@@ -95,6 +101,7 @@ export default function Update({
         <div className="space-y-4 mx-auto">
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-2">
             <Input
+              error={error?.error}
               label="Name"
               name="name"
               type="text"
@@ -102,6 +109,7 @@ export default function Update({
               defaultValue={product.name}
             />
             <Input
+              error={error?.error}
               label="Meta Description"
               name="metaDescription"
               type="text"
@@ -111,6 +119,7 @@ export default function Update({
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Input
+              error={error?.error}
               label="Tags"
               name="tag"
               type="text"
@@ -118,6 +127,7 @@ export default function Update({
               defaultValue={product.tag}
             />
             <Input
+              error={error?.error}
               label="Meta Keywords"
               name="metaKeywords"
               type="text"
@@ -128,6 +138,7 @@ export default function Update({
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <Select
+              error={error?.error}
               label="Categorie"
               name="categorieId"
               data={categories}
@@ -136,6 +147,7 @@ export default function Update({
             />
 
             <Select
+              error={error?.error}
               label="Brand"
               name="brandId"
               data={brands}
@@ -144,8 +156,8 @@ export default function Update({
             />
 
             <div>
-              {product?.published}
               <Select
+                error={error?.error}
                 label="Published"
                 name="published"
                 data={[
@@ -158,6 +170,7 @@ export default function Update({
             </div>
           </div>
           <InputFile
+            error={error?.error}
             name="images"
             label="Image"
             onChange={hanldeInputFile}
@@ -179,19 +192,15 @@ export default function Update({
               </div>
             ))}
           </div>
-          <div>
-            <label htmlFor="message">Description</label>
-            <textarea
-              className="w-full rounded-lg border-gray-200 p-3 text-sm"
-              placeholder="description"
-              name="description"
-              rows="8"
-              id="description"
-              onChange={handleChange}
-              value={product.description}
-            ></textarea>
-          </div>
-
+          <Textarea
+            className="w-full rounded-lg border-gray-200 p-3 text-sm"
+            placeholder="description"
+            name="description"
+            rows="8"
+            id="description"
+            onChange={handleChange}
+            defaultValue={product.description}
+          />
           <div className="mt-4">
             <button
               onClick={onSubmit}

@@ -26,9 +26,9 @@ export default function Pagination({
             href={renderPageLink(pageNumber)}
             className={`${
               pageNumber === currentPage
-                ? "text-white bg-purple-500"
-                : "text-black"
-            } px-4 py-2 mx-1 rounded text-sm font-semibold no-`}
+                ? "text-blue-700 bg-blue-500 bg-opacity-30"
+                : "text-slate-700"
+            } px-4 py-2 mx-1 rounded text-sm font-semibold no-warp`}
           >
             {pageNumber ? pageNumber : null}
           </Link>
