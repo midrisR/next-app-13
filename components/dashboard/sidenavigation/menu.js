@@ -3,6 +3,8 @@ import {
   FaTags,
   FaQrcode,
   FaUserGroup,
+  FaUsers,
+  FaUserTag,
 } from "react-icons/fa6";
 
 const data = [
@@ -20,6 +22,16 @@ const data = [
     title: "brand",
     icon: <FaTags />,
     link: "/dashboard/brand",
+  },
+  {
+    title: "client",
+    icon: <FaUsers />,
+    link: "/dashboard/client",
+  },
+  {
+    title: "vendor",
+    icon: <FaUserTag />,
+    link: "/dashboard/vendor",
   },
   {
     title: "user",

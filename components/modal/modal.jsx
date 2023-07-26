@@ -2,16 +2,25 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useState } from "react";
 
-export default function Modal({ children, onSubmit, icon, width }) {
+export default function Modal({ children, onSubmit, icon, width, success }) {
   const [isOpen, setIsOpen] = useState(false);
 
   function closeModal() {
     setIsOpen(false);
   }
 
-  function openModal() {
+  const openModal = () => {
     setIsOpen(true);
-  }
+  };
+
+  const handleSubmit = async (e) => {
+    const res = await onSubmit(e);
+    if (res.success) {
+      setIsOpen(false);
+    } else {
+      setIsOpen(true);
+    }
+  };
 
   return (
     <>
@@ -61,9 +70,7 @@ export default function Modal({ children, onSubmit, icon, width }) {
                     <button
                       type="button"
                       className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                      onClick={(e) => {
-                        onSubmit(e);
-                      }}
+                      onClick={handleSubmit}
                     >
                       Submit
                     </button>

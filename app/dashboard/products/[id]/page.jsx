@@ -1,6 +1,5 @@
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import DashboardLayout from "@/components/dashboard";
 import Table from "../components/table";
 import Pagination from "@/components/Pagination";
 import getProducts from "@/lib/getProduct";
@@ -13,7 +12,7 @@ export default async function Page({ params: { id } }) {
     getBrands(),
   ]);
   return (
-    <DashboardLayout>
+    <>
       <Table
         data={products.products}
         accessToken={accessToken}
@@ -26,6 +25,6 @@ export default async function Page({ params: { id } }) {
         itemsPerPage={10}
         renderPageLink={(page) => `/dashboard/products/${page}`}
       />
-    </DashboardLayout>
+    </>
   );
 }

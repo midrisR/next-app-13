@@ -58,6 +58,7 @@ export default function tbody({ data, accessToken }) {
       ref.current.value = "";
       router.refresh();
     }
+    return result;
   };
   const deleteCategorie = async (id) => {
     await fetch(`http://localhost:5000/api/categorie/${id}`, {

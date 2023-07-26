@@ -42,7 +42,7 @@ export default function Create({ accessToken }) {
     }
   };
   return (
-    <div className="w-2/6 bg-white rounded-md shadow-md px-12">
+    <div className="w-2/6 bg-white rounded-md shadow-xl px-12">
       <p className="font-semibold text-2xl text-center text-slate-800 px-4 mt-12">
         Create brand
       </p>

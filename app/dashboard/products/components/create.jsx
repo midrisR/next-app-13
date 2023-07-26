@@ -10,6 +10,7 @@ export default function Create({ categories, brands, accessToken }) {
   const [body, setBody] = useState([]);
   const [image, setImage] = useState([]);
   const [error, setError] = useState({});
+  const [success, setSuccess] = useState(false);
   const router = useRouter();
 
   const handleChange = (e) => {
@@ -56,14 +57,24 @@ export default function Create({ categories, brands, accessToken }) {
     const result = await res.json();
     if (!result.success) {
       setError(result);
+      setSuccess(false);
     } else {
+      setSuccess(true);
+      setError({});
       setImage([]);
       router.refresh();
     }
+    return result;
   };
   return (
     <div className="my-4">
-      <Modal icon="create product" width="3/6" onSubmit={onSubmit}>
+      <Modal
+        icon="create product"
+        width="3/6"
+        success={success}
+        error={error?.success}
+        onSubmit={onSubmit}
+      >
         {typeof error?.error === "string" && (
           <div
             role="alert"

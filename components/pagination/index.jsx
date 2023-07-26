@@ -8,8 +8,10 @@ const Pagination = ({ items, pageSize, currentPage, onPageChange }) => {
         {pages.map((page) => (
           <li
             key={page}
-            className={`px-4 py-1 rounded cursor-pointer font-semibold ${
-              page === currentPage ? "bg-blue-400 text-white" : "text-slate-800"
+            className={`px-4 py-1 rounded cursor-pointer ${
+              page === currentPage
+                ? "bg-blue-400 text-white font-semibold"
+                : "text-slate-800"
             }`}
             onClick={() => onPageChange(page)}
           >

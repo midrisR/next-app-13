@@ -1,6 +1,5 @@
 import Table from "./components/table";
 import Pagination from "@/components/Pagination";
-import DashboardLayout from "@/components/dashboard";
 import getProducts from "@/lib/getProduct";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
@@ -15,21 +14,19 @@ export default async function Products() {
   ]);
 
   return (
-    <DashboardLayout>
-      <div className="bg-white rounded py-4">
-        <Table
-          data={products.products}
-          categories={categories}
-          brands={brands}
-          accessToken={accessToken}
-        />
-        <Pagination
-          totalItems={products.totalProducts}
-          currentPage={products.currentPage}
-          itemsPerPage={10}
-          renderPageLink={(page) => `/dashboard/products/${page}`}
-        />
-      </div>
-    </DashboardLayout>
+    <div className="bg-white rounded py-4">
+      <Table
+        data={products.products}
+        categories={categories}
+        brands={brands}
+        accessToken={accessToken}
+      />
+      <Pagination
+        totalItems={products.totalProducts}
+        currentPage={products.currentPage}
+        itemsPerPage={10}
+        renderPageLink={(page) => `/dashboard/products/${page}`}
+      />
+    </div>
   );
 }
