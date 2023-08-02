@@ -4,14 +4,12 @@ const Pagination = ({ items, pageSize, currentPage, onPageChange }) => {
   const pages = Array.from({ length: pagesCount }, (_, i) => i + 1);
   return (
     <div>
-      <ul className="flex gap-3 py-4 justify-center bg-white">
+      <ul className="flex gap-4 py-4 justify-center bg-white">
         {pages.map((page) => (
           <li
             key={page}
-            className={`px-4 py-1 rounded cursor-pointer ${
-              page === currentPage
-                ? "bg-blue-400 text-white font-semibold"
-                : "text-slate-800"
+            className={`h-8 w-8 rounded flex items-center justify-center leading-8 cursor-pointer ${
+              page === currentPage ? "text-white bg-black" : "text-black"
             }`}
             onClick={() => onPageChange(page)}
           >

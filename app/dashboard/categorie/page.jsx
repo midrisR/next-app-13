@@ -13,9 +13,11 @@ export default async function Categorie() {
   const { accessToken } = await getServerSession(authOptions);
   const categories = await getCategorie();
   return (
-    <div className="flex gap-5 justify-center mt-12 overflow-x-auto rounded-lg border border-gray-200 bg-white p-8">
-      <Table data={categories} accessToken={accessToken} />
-      <Create accessToken={accessToken} />
+    <div className="overflow-x-auto rounded-2xl shadow-xl bg-white py-4">
+      <div className="mt-4 w-5/6 mx-auto">
+        <Create accessToken={accessToken} />
+        <Table data={categories} accessToken={accessToken} />
+      </div>
     </div>
   );
 }

@@ -1,28 +1,37 @@
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
-
+import { useEffect, useRef } from "react";
 import data from "./menu";
+import { usePathname, useSearchParams } from "next/navigation";
 
-const style = {
-  inactive: `text-gray-400`,
-  active: `font-medium text-white`,
-  link: `flex items-center justify-start my-2 p-4 text-sm w-full hover:text-white`,
-};
-
-export default function SidenavItems() {
+export default function SidenavItems({ resize, setOpen }) {
   const path = usePathname();
+  const searchParams = useSearchParams();
+  const ref = useRef(null);
+
+  useEffect(() => {
+    if (ref.current !== path) {
+      ref.current = path;
+      setOpen(false);
+    }
+  }, [path, searchParams]);
   return (
-    <ul className="md:pl-6">
+    <ul className="flex justify-center">
       <li>
         {data.map((item) => (
           <Link
+            ref={ref}
             href={item.link}
             key={item.title}
-            className={`${style.link} 
-               ${item.link === path ? style.active : style.inactive}`}
+            className={`${
+              resize
+                ? "flex flex-col justify-center items-center"
+                : "flex items-center justify-start"
+            } my-2 py-4 text-sm w-full hover:text-white ${
+              item.link === path ? "font-medium text-white" : "text-gray-400"
+            }`}
           >
-            <span>{item.icon}</span>
-            <span className="mx-4">{item.title}</span>
+            {item.icon}
+            <span className="mt-1 mx-4">{item.title}</span>
           </Link>
         ))}
       </li>

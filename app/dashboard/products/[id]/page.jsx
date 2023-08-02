@@ -12,7 +12,7 @@ export default async function Page({ params: { id } }) {
     getBrands(),
   ]);
   return (
-    <>
+    <div className="overflow-x-auto rounded-2xl shadow-xl bg-white py-4">
       <Table
         data={products.products}
         accessToken={accessToken}
@@ -25,6 +25,6 @@ export default async function Page({ params: { id } }) {
         itemsPerPage={10}
         renderPageLink={(page) => `/dashboard/products/${page}`}
       />
-    </>
+    </div>
   );
 }

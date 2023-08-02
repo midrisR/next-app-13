@@ -1,24 +1,28 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Input from "@/components/form/input";
 import Modal from "@/components/modal/modal";
 import ModalDelete from "@/components/modal/delete";
 import { FaEye } from "react-icons/fa6";
+
 export default function tbody({ data, accessToken }) {
   const router = useRouter();
-  const [value, setValue] = useState([]);
   const [error, setError] = useState([]);
   const [success, setSuccess] = useState(false);
 
-  const handleChange = (e) => {
-    setValue((state) => ({
-      ...state,
-      [e.target.name]: e.target.value,
-    }));
-  };
+  const nameRef = useRef("");
+  const addressRef = useRef("");
+  const contactRef = useRef("");
+  const emailRef = useRef("");
 
   const onSubmit = async (e, id) => {
     e.preventDefault();
+    const value = {
+      name: nameRef.current.value,
+      address: addressRef.current.value,
+      contact: contactRef.current.value,
+      email: emailRef.current.value,
+    };
     const res = await fetch(`http://localhost:5000/api/vendor/${id}`, {
       method: "PUT",
       body: JSON.stringify(value),
@@ -27,10 +31,12 @@ export default function tbody({ data, accessToken }) {
         Authorization: accessToken,
       },
     });
-
     const result = await res.json();
     if (result.success) {
-      setValue([]);
+      nameRef.current.value = "";
+      addressRef.current.value = "";
+      contactRef.current.value = "";
+      emailRef.current.value = "";
       setSuccess(true);
       setError({});
       router.refresh();
@@ -48,7 +54,6 @@ export default function tbody({ data, accessToken }) {
     });
     router.refresh();
   };
-
   return (
     <tbody className="divide-y divide-gray-200">
       {data?.map((val, i) => (
@@ -78,36 +83,40 @@ export default function tbody({ data, accessToken }) {
             >
               <div className="mt-2">
                 <Input
+                  inputRef={nameRef}
                   error={error?.error}
                   label="Name"
                   name="name"
                   type="text"
                   defaultValue={val.name}
-                  onChange={handleChange}
+                  onChange={(e) => (nameRef.current.value = e.target.value)}
                 />
                 <Input
+                  inputRef={addressRef}
                   error={error?.error}
                   label="Address"
                   name="address"
                   type="text"
                   defaultValue={val.address}
-                  onChange={handleChange}
+                  onChange={(e) => (addressRef.current.value = e.target.value)}
                 />
                 <Input
+                  inputRef={contactRef}
                   error={error?.error}
                   label="Contact"
                   name="contact"
                   type="text"
                   defaultValue={val.contact}
-                  onChange={handleChange}
+                  onChange={(e) => (contactRef.current.value = e.target.value)}
                 />
                 <Input
+                  inputRef={emailRef}
                   error={error?.error}
                   label="Email"
                   name="email"
                   type="text"
                   defaultValue={val.email}
-                  onChange={handleChange}
+                  onChange={(e) => (emailRef.current.value = e.target.value)}
                 />
               </div>
             </Modal>

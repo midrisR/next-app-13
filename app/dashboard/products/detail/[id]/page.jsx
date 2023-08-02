@@ -13,14 +13,12 @@ export default async function Page({ params: { id } }) {
     getBrands(),
   ]);
   return (
-    <DashboardLayout>
-      <Update
-        productId={id}
-        product={product}
-        categories={categories}
-        brands={brands}
-        accessToken={accessToken}
-      />
-    </DashboardLayout>
+    <Update
+      productId={id}
+      product={product}
+      categories={categories}
+      brands={brands}
+      accessToken={accessToken}
+    />
   );
 }

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Modal from "@/components/modal/modal";
 import Input from "@/components/form/input";
 import Select from "@/components/form/select";
@@ -7,45 +7,42 @@ import InputFile from "@/components/form/inputFile";
 import Textarea from "@/components/form/textarea";
 import { useRouter } from "next/navigation";
 export default function Create({ categories, brands, accessToken }) {
-  const [body, setBody] = useState([]);
-  const [image, setImage] = useState([]);
+  const [preview, setPreview] = useState([]);
   const [error, setError] = useState({});
-  const [success, setSuccess] = useState(false);
   const router = useRouter();
 
-  const handleChange = (e) => {
-    setBody((state) => ({
-      ...state,
-      [e.target.name]: e.target.value,
-    }));
-  };
-  const handleSelect = (name, value) => {
-    setBody((state) => ({
-      ...state,
-      [name]: value,
-    }));
-  };
+  const imageRef = useRef("");
+  const nameRef = useRef("");
+  const categorieIdRef = useRef("");
+  const descriptionRef = useRef("");
+  const publishedRef = useRef("");
+  const brandIdRef = useRef("");
+  const tagRef = useRef("");
+  const metaDescriptionRef = useRef("");
+  const metaKeywordsRef = useRef("");
 
   const hanldeInputFile = (e) => {
-    let imgData = [];
+    const imgData = [];
     for (let i = 0; i < e.target.files.length; i++) {
       imgData.push(e.target.files[i]);
     }
-    setImage(imgData);
+    setPreview(imgData);
   };
+
   const onSubmit = async (e) => {
     e.preventDefault();
+    const img = imageRef.current.files;
     const formData = new FormData();
-    formData.append("name", body.name || "");
-    formData.append("categorieId", body.categorieId || "");
-    formData.append("description", body.description || "");
-    formData.append("brandId", body.brandId || "");
-    formData.append("tag", body.tag || "");
-    formData.append("metaDescription", body.metaDescription || "");
-    formData.append("metaKeywords", body.metaKeywords || "");
-    formData.append("published", body.published || "");
-    for (const key of Object.keys(image)) {
-      formData.append("images", image[key]);
+    formData.append("name", nameRef.current.value);
+    formData.append("categorieId", categorieIdRef.current.value);
+    formData.append("brandId", brandIdRef.current.value);
+    formData.append("published", publishedRef.current.value);
+    formData.append("description", descriptionRef.current.value);
+    formData.append("tag", tagRef.current.value);
+    formData.append("metaDescription", metaDescriptionRef.current.value);
+    formData.append("metaKeywords", metaKeywordsRef.current.value);
+    for (const key of Object.keys(img)) {
+      formData.append("images", img[key]);
     }
     const res = await fetch("http://localhost:5000/api/product", {
       method: "POST",
@@ -56,25 +53,17 @@ export default function Create({ categories, brands, accessToken }) {
     });
     const result = await res.json();
     if (!result.success) {
-      setError(result);
-      setSuccess(false);
+      setError(result.error);
     } else {
-      setSuccess(true);
       setError({});
-      setImage([]);
+      setPreview([]);
       router.refresh();
     }
     return result;
   };
   return (
     <div className="my-4">
-      <Modal
-        icon="create product"
-        width="3/6"
-        success={success}
-        error={error?.success}
-        onSubmit={onSubmit}
-      >
+      <Modal icon="create product" width="3/6" onSubmit={onSubmit}>
         {typeof error?.error === "string" && (
           <div
             role="alert"
@@ -93,7 +82,6 @@ export default function Create({ categories, brands, accessToken }) {
                   clipRule="evenodd"
                 />
               </svg>
-
               <strong className="block font-medium">{error?.error} </strong>
             </div>
           </div>
@@ -102,82 +90,93 @@ export default function Create({ categories, brands, accessToken }) {
           <div className="space-y-4  mx-auto">
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-2">
               <Input
-                error={error?.error}
+                inputRef={nameRef}
+                error={error}
                 label="Name"
                 name="name"
                 type="text"
-                onChange={handleChange}
+                onChange={(e) => (nameRef.current.value = e.target.value)}
               />
               <Input
-                error={error?.error}
+                inputRef={metaDescriptionRef}
+                error={error}
                 label="Meta Description"
                 name="metaDescription"
                 type="text"
-                onChange={handleChange}
+                onChange={(e) =>
+                  (metaDescriptionRef.current.value = e.target.value)
+                }
               />
             </div>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Input
-                error={error?.error}
+                inputRef={tagRef}
+                error={error}
                 label="Tags"
                 name="tag"
                 type="text"
-                onChange={handleChange}
+                onChange={(e) => (tagRef.current.value = e.target.value)}
               />
               <Input
-                error={error?.error}
+                inputRef={metaKeywordsRef}
+                error={error}
                 label="Meta Keywords"
                 name="metaKeywords"
                 type="text"
-                onChange={handleChange}
+                onChange={(e) =>
+                  (metaKeywordsRef.current.value = e.target.value)
+                }
               />
             </div>
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               <Select
-                error={error?.error}
+                error={error}
                 label="Categorie"
                 name="categorieId"
                 data={categories}
-                onChange={handleSelect}
-                defaultValue=""
+                onChange={(data) => (categorieIdRef.current.value = data)}
+                inputRef={categorieIdRef}
               />
 
               <Select
-                error={error?.error}
+                error={error}
                 label="Brand"
                 name="brandId"
                 data={brands}
-                onChange={handleSelect}
-                defaultValue=""
+                onChange={(data) => (brandIdRef.current.value = data)}
+                inputRef={brandIdRef}
               />
 
               <div>
                 <Select
-                  error={error?.error}
+                  error={error}
                   label="Published"
                   name="published"
                   data={[
                     { id: "0", name: "false" },
                     { id: "1", name: "true" },
                   ]}
-                  onChange={handleSelect}
-                  defaultValue=""
+                  onChange={(data) => (publishedRef.current.value = data)}
+                  inputRef={publishedRef}
                 />
               </div>
             </div>
             <InputFile
-              error={error?.error}
+              input
+              error={error}
               name="images"
               label="Image"
               onChange={hanldeInputFile}
-              preview={image}
+              preview={preview}
+              inputRef={imageRef}
             />
 
             <Textarea
+              inputRef={descriptionRef}
               name="description"
-              onChange={handleChange}
-              error={error?.error}
+              error={error}
+              onChange={(e) => (descriptionRef.current.value = e.target.value)}
             />
           </div>
         </div>

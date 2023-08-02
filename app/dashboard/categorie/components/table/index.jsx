@@ -15,8 +15,8 @@ export default function Table({ data, accessToken }) {
 
   const paginatedPosts = paginate(data, currentPage, pageSize);
   return (
-    <div className="overflow-x-auto w-4/6">
-      <table className="divide-y-2 w-full divide-gray-200 bg-white text-sm lowercase ">
+    <div className="overflow-x-auto w-full">
+      <table className="divide-y-2 w-full divide-gray-200 bg-white text-sm lowercase">
         <Thead />
         <Tbody data={paginatedPosts} accessToken={accessToken} />
       </table>

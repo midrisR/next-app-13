@@ -2,7 +2,7 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useState } from "react";
 
-export default function Modal({ children, onSubmit, icon, width, success }) {
+export default function Modal({ children, onSubmit, icon, width }) {
   const [isOpen, setIsOpen] = useState(false);
 
   function closeModal() {
@@ -60,9 +60,9 @@ export default function Modal({ children, onSubmit, icon, width, success }) {
                 leaveTo="opacity-0 scale-95"
               >
                 <Dialog.Panel
-                  className={`${
-                    width ? width : "max-w-md"
-                  } transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all`}
+                  className={`w-full ${
+                    width ? width : "lg:max-w-md"
+                  } transform rounded-2xl relative bg-white p-6 text-left align-middle shadow-xl transition-all`}
                 >
                   <div className="mt-2">{children}</div>
 

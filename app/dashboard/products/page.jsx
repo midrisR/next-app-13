@@ -14,7 +14,7 @@ export default async function Products() {
   ]);
 
   return (
-    <div className="bg-white rounded py-4">
+    <div className="overflow-x-auto rounded-2xl shadow-xl bg-white py-4">
       <Table
         data={products.products}
         categories={categories}

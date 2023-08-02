@@ -8,39 +8,30 @@ import ModalDelete from "@/components/modal/delete";
 import { FaEye } from "react-icons/fa6";
 export default function tbody({ data, accessToken }) {
   const router = useRouter();
-  const [value, setValue] = useState([]);
-  const [image, setImage] = useState([]);
+  const [error, setError] = useState({});
+  const [preview, setPreview] = useState([]);
 
-  const ref = useRef();
+  const nameRef = useRef("");
+  const publishedRef = useRef("");
+  const imageRef = useRef("");
 
   const hanldeInputFile = (e) => {
-    setImage([e.target.files[0]]);
-  };
-
-  const handleChange = (e) => {
-    setValue((state) => ({
-      ...state,
-      [e.target.name]: e.target.value,
-    }));
-  };
-
-  const handleSelect = (name, value) => {
-    setValue((state) => ({
-      ...state,
-      [name]: value,
-    }));
+    const imgData = [];
+    for (let i = 0; i < e.target.files.length; i++) {
+      imgData.push(e.target.files[i]);
+    }
+    setPreview(imgData);
   };
 
   const onSubmit = async (e, id) => {
     e.preventDefault();
-    const filter = data.find(({ id }) => id === id);
+    const img = imageRef.current.files;
 
     const formData = new FormData();
-    formData.append("name", value.name || filter.name);
-    formData.append("published", value.published || filter.published);
-
-    for (const key of Object.keys(image)) {
-      formData.append("images", image[key]);
+    formData.append("name", nameRef.current.value);
+    formData.append("published", publishedRef.current.value);
+    for (const key of Object.keys(img)) {
+      formData.append("images", img[key]);
     }
 
     const res = await fetch(`http://localhost:5000/api/categorie/${id}`, {
@@ -53,13 +44,15 @@ export default function tbody({ data, accessToken }) {
 
     const result = await res.json();
     if (result.success) {
-      setValue([]);
-      setImage([]);
-      ref.current.value = "";
+      setError({});
+      setPreview();
       router.refresh();
+    } else {
+      setError(result.error);
     }
     return result;
   };
+
   const deleteCategorie = async (id) => {
     await fetch(`http://localhost:5000/api/categorie/${id}`, {
       method: "DELETE",
@@ -93,41 +86,42 @@ export default function tbody({ data, accessToken }) {
             >
               <div className="mt-2">
                 <Input
+                  inputRef={nameRef}
+                  error={error}
                   label="Name"
                   name="name"
                   type="text"
                   defaultValue={val.name}
-                  onChange={handleChange}
+                  onChange={(e) => (nameRef.current.value = e.target.value)}
                 />
 
                 <Select
+                  error={error}
                   label="Published"
                   name="published"
+                  defaultValue={String(Number(val.published))}
                   data={[
                     { id: "0", name: "false" },
                     { id: "1", name: "true" },
                   ]}
-                  onChange={handleSelect}
-                  defaultValue={
-                    value?.published || String(Number(val.published))
-                  }
+                  onChange={(data) => (publishedRef.current.value = data)}
+                  inputRef={publishedRef}
                 />
+
                 <InputFile
-                  label="Image"
+                  error={error}
                   name="images"
-                  curref={ref}
+                  label="Image"
                   onChange={hanldeInputFile}
-                  preview={image}
+                  preview={preview}
+                  inputRef={imageRef}
                 />
-                {image.length < 1 && (
-                  <img
-                    key={i}
-                    src={`http://localhost:5000/images/categories/${val.id}/${val.image}`}
-                    alt="dummy"
-                    width={100}
-                    height={100}
-                  />
-                )}
+                <img
+                  key={i}
+                  src={`http://localhost:5000/images/categories/${val.id}/${val.image}`}
+                  alt="dummy"
+                  width={100}
+                />
               </div>
             </Modal>
             <ModalDelete handleDelete={() => deleteCategorie(val.id)} />

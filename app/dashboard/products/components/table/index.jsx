@@ -4,7 +4,7 @@ import Tbody from "./tbody";
 import Create from "../create";
 export default function Table({ data, accessToken, categories, brands }) {
   return (
-    <div className="overflow-x-auto mt-4 w-5/6 mx-auto">
+    <div className="mt-4 w-5/6 mx-auto">
       <Create
         categories={categories}
         brands={brands}

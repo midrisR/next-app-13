@@ -1,11 +1,23 @@
 import Header from "@/components/header";
-export default function Home() {
+import { getCategories } from "@/lib/api";
+import Card from "@/components/card/card";
+export default async function Home() {
+  const categories = await getCategories();
   return (
     <>
       <Header />
-      Lorem ipsum, dolor sit amet consectetur adipisicing elit. Est tempore
-      facere neque vitae voluptatem natus, quod officia, molestiae quo maiores
-      non voluptas reiciendis, quae id nisi veniam ullam. Aliquam, expedita?
+
+      <div className="w-full mt-12 flex flex-wrap gap-4 justify-center">
+        {categories.map(({ id, name, image }) => (
+          <div className="w-1/5">
+            <Card
+              key={id}
+              name={name}
+              image={`http://localhost:5000/images/categories/${id}/${image}`}
+            />
+          </div>
+        ))}
+      </div>
     </>
   );
 }

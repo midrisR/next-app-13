@@ -26,7 +26,7 @@ export default function Create({ accessToken }) {
   const onSubmit = async (e) => {
     e.preventDefault();
 
-    const res = await fetch(`http://localhost:5000/api/vendor`, {
+    const res = await fetch(`http://localhost:5000/api/client`, {
       method: "POST",
       body: JSON.stringify(value),
       headers: {
@@ -49,7 +49,7 @@ export default function Create({ accessToken }) {
 
   return (
     <div className="my-4">
-      <Modal onSubmit={onSubmit} icon="create vendor" width="lg:w-2/6">
+      <Modal onSubmit={onSubmit} icon="create client" width="lg:w-2/6">
         <Input
           error={error}
           label="Name"
@@ -74,7 +74,7 @@ export default function Create({ accessToken }) {
           value={value.contact}
           onChange={handleChange}
         />
-        <small className="italic w-1/5">
+        <small className="italic">
           *Note : jika kontak lebih dari satu maka inputkan data seperti
           bertikut : telepon:123456, wa:123456, fax:123456. etc...
         </small>

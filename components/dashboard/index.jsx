@@ -2,27 +2,31 @@
 import { useState } from "react";
 import TopNavigation from "./topnavigation";
 import SideNavigation from "./sidenavigation";
-import { usePathname } from "next/navigation";
 import Overlay from "./overlay";
 import { GlobalProvider } from "@/hooks/useContext";
-const style = {
-  container: `h-screen overflow-hidden relative`,
-  mainContainer: `bg-slate-800 flex flex-col h-screen pl-0 w-full lg:w-[calc(100%-16rem)]`,
-  main: `bg-slate-200 h-screen overflow-auto pb-36 pt-4 px-2 md:pb-8 md:px-4 lg:px-6 lg:rounded-tl-xl`,
-};
-
 export default function DashboardLayout({ children }) {
-  const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [resize, setResize] = useState(true);
+
   return (
     <GlobalProvider>
-      <div className={style.container}>
+      <div className="h-screen overflow-hidden relative">
         <div className="flex items-start">
           <Overlay open={open} onClick={() => setOpen((prev) => !prev)} />
-          <SideNavigation mobilePosition="right" open={open} />
-          <div className={style.mainContainer}>
-            <TopNavigation onClick={() => setOpen((prev) => !prev)} />
-            <main className={style.main}>{children}</main>
+          <SideNavigation
+            mobilePosition="right"
+            open={open}
+            setOpen={setOpen}
+            resize={resize}
+          />
+          <div className="bg-slate-800 flex flex-col h-screen pl-0 w-full">
+            <TopNavigation
+              onClick={() => setOpen((prev) => !prev)}
+              changeSize={() => setResize((prev) => !prev)}
+            />
+            <main className="bg-indigo-100 h-screen overflow-auto pb-36 pt-4 px-2 md:pb-8 md:px-4 lg:px-6 lg:rounded-tl-xl">
+              {children}
+            </main>
           </div>
         </div>
       </div>

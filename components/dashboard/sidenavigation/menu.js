@@ -3,6 +3,7 @@ import {
   FaTags,
   FaQrcode,
   FaUserGroup,
+  FaMoneyBillTransfer,
   FaUsers,
   FaUserTag,
 } from "react-icons/fa6";
@@ -34,9 +35,14 @@ const data = [
     link: "/dashboard/vendor",
   },
   {
-    title: "user",
-    icon: <FaUserGroup />,
-    link: "/dashboard/user",
+    title: "offers",
+    icon: <FaMoneyBillTransfer />,
+    link: "/dashboard/offers",
   },
+  // {
+  //   title: "user",
+  //   icon: <FaUserGroup />,
+  //   link: "/dashboard/user",
+  // },
 ];
 export default data;

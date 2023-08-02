@@ -2,8 +2,8 @@
 import { useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 import Dropdown from "./dropdown";
-
-export default function TopNavigation({ onClick }) {
+import { FaBars } from "react-icons/fa6";
+export default function TopNavigation({ onClick, changeSize }) {
   const [show, setShow] = useState(false);
 
   const handleShow = () => {
@@ -14,6 +14,12 @@ export default function TopNavigation({ onClick }) {
     <header className="bg-slate-800 h-20 items-center relative w-full z-10">
       <div className="flex flex-col h-full justify-center mx-auto px-3 relative">
         <div className="flex items-center pl-1 relative w-full sm:ml-0 sm:pr-2 lg:max-w-68">
+          <FaBars
+            size={32}
+            color="white"
+            className="ml-3 cursor-pointer md:hidden sm:hidden lg:block hidden"
+            onClick={changeSize}
+          />
           <div className="flex left-0 relative w-3/4">
             <div className="flex group h-full items-center relative w-12">
               <button
