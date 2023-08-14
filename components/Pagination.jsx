@@ -1,6 +1,7 @@
 import Link from "next/link";
 import usePagination from "@/hooks/usePagination";
 import NextPrev from "./nextPrev";
+
 export const dotts = "...";
 
 export default function Pagination({

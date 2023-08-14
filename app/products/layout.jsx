@@ -1,4 +1,4 @@
-import Filter from "./filter";
+import Filter from "@/components/filter";
 import Header from "@/components/header";
 import { getCategories, getBrands } from "@/lib/api";
 export default async function RootLayout({ children }) {
@@ -6,17 +6,13 @@ export default async function RootLayout({ children }) {
     getCategories(),
     getBrands(),
   ]);
-  const data = categories.map(({ id, name }) => {
-    return { id, name };
-  });
   return (
     <>
       <Header />
-      <div className="bg-red-300">
-        <Filter categories={data} brands={Brands}>
-          {children}
-        </Filter>
-      </div>
+
+      <Filter categories={categories} brands={Brands}>
+        {children}
+      </Filter>
     </>
   );
 }

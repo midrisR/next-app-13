@@ -1,5 +1,12 @@
 "use client";
-import { Fragment, useState } from "react";
+
+import {
+  useRouter,
+  useSearchParams,
+  usePathname,
+  useParams,
+} from "next/navigation";
+import { Fragment, useState, useEffect, useCallback } from "react";
 import { Dialog, Disclosure, Menu, Transition } from "@headlessui/react";
 import {
   HiXMark,
@@ -17,13 +24,6 @@ const sortOptions = [
   { name: "Price: Low to High", href: "#", current: false },
   { name: "Price: High to Low", href: "#", current: false },
 ];
-const subCategories = [
-  { name: "Totes", href: "#" },
-  { name: "Backpacks", href: "#" },
-  { name: "Travel Bags", href: "#" },
-  { name: "Hip Bags", href: "#" },
-  { name: "Laptop Sleeves", href: "#" },
-];
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -31,56 +31,122 @@ function classNames(...classes) {
 
 export default function Filter({ children, categories, brands }) {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-  const [checked, setCheked] = useState([]);
+  const [filterBrands, setFilterBrands] = useState([]);
+
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { id } = useParams();
+
+  const createQueryString = useCallback(
+    (name, value) => {
+      const params = new URLSearchParams(searchParams);
+      params.set(name, value);
+      return params.toString();
+    },
+    [searchParams]
+  );
+
+  const Checked = (data) => {
+    const pr = searchParams.get("brands");
+    if (pr !== null) {
+      const x = pr.indexOf(data);
+      return x;
+    }
+    return;
+  };
+
+  const categorieChecked = (number) => {
+    if (id === String(number)) {
+      return true;
+    }
+    return false;
+  };
+
+  useEffect(() => {
+    const pr = searchParams.get("brands");
+    if (pr !== null) {
+      setFilterBrands(pr.split(","));
+    }
+    const params = new URLSearchParams(searchParams);
+    for (const [key, value] of searchParams.entries()) {
+      if (!value) {
+        params.delete(key);
+        const deleted = params.toString();
+        router.push(pathname + "?" + deleted);
+      }
+    }
+  }, [searchParams, pathname]);
+
+  const setFillterFunction = (e, paramsName, data, newFunc) => {
+    const { value, checked } = e.target;
+    let newArr = [...data];
+    if (checked) {
+      newArr = [...data, value];
+    } else {
+      newArr.splice(data.indexOf(value), 1);
+    }
+    newFunc(newArr);
+    const param = newArr.toString();
+    router.push(pathname + "?" + createQueryString(paramsName, param));
+  };
+
   const filters = [
     {
       id: "materials",
       name: "Material",
+      setFilter: (e) => {
+        return;
+      },
       options: [
         {
           value: "stainless steel",
           label: "Stainless Steel",
-          checked: false,
         },
         {
           value: "carbon steel",
           label: "Carbon Steel",
-          checked: false,
         },
         {
           value: "alloy steel",
           label: "Alloy Steel",
-          checked: false,
         },
       ],
     },
     {
-      id: "category",
+      id: "categories",
       name: "Category",
-      options: categories.map(({ name, id }) => ({
-        value: id,
-        label: name,
-        checked: false,
+      setFilter: function (...props) {
+        const { id, name } = props[0];
+        const slugs = name.split(" ").join("-");
+        router.push("/products" + "/" + id + "/" + slugs);
+      },
+      options: categories.map((categorie) => ({
+        id: categorie.id,
+        value: categorie.name,
+        label: categorie.name,
+        chekced: categorieChecked(categorie.id),
       })),
     },
     {
       id: "brands",
       name: "Brands",
-      options: brands.map(({ name, id }) => ({
-        value: id,
+      setFilter: function (...props) {
+        const { e } = props[0];
+        const handleFilter = (data) => {
+          setFilterBrands(data);
+        };
+        setFillterFunction(e, "brands", filterBrands, handleFilter);
+      },
+      options: brands.map(({ id, name }) => ({
+        id: id,
+        value: name,
         label: name,
-        checked: false,
+        chekced: Checked(name) >= 0 ? true : false,
       })),
     },
   ];
-  const handleChecked = (e) => {
-    const { name, value } = e.target;
-    setCheked((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-  console.log(checked);
+
   return (
     <div className="bg-white">
       <div>
@@ -130,19 +196,7 @@ export default function Filter({ children, categories, brands }) {
 
                   {/* Filters */}
                   <form className="mt-4 border-t border-gray-200">
-                    <h3 className="sr-only">Categories</h3>
-                    <ul
-                      role="list"
-                      className="px-2 py-3 font-medium text-gray-900"
-                    >
-                      {subCategories.map((category) => (
-                        <li key={category.name}>
-                          <a href={category.href} className="block px-2 py-3">
-                            {category.name}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
+                    {/* filter */}
 
                     {filters.map((section) => (
                       <Disclosure
@@ -172,6 +226,7 @@ export default function Filter({ children, categories, brands }) {
                                 </span>
                               </Disclosure.Button>
                             </h3>
+                            {/* mobile filter */}
                             <Disclosure.Panel className="pt-6">
                               <div className="space-y-6">
                                 {section.options.map((option, optionIdx) => (
@@ -184,8 +239,12 @@ export default function Filter({ children, categories, brands }) {
                                       name={`${section.id}[]`}
                                       defaultValue={option.value}
                                       type="checkbox"
-                                      defaultChecked={option.checked}
+                                      defaultChecked={option.chekced}
                                       className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                      onClick={(e) => {
+                                        section.setFilter(e);
+                                        setMobileFiltersOpen(false);
+                                      }}
                                     />
                                     <label
                                       htmlFor={`filter-mobile-${section.id}-${optionIdx}`}
@@ -207,11 +266,13 @@ export default function Filter({ children, categories, brands }) {
             </div>
           </Dialog>
         </Transition.Root>
+        {/* end Mobile filter */}
 
-        <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* web filter dialog */}
+        <main className="mx-auto w-full px-4 sm:px-6 lg:px-32">
           <div className="flex items-baseline justify-between border-b border-gray-200 pb-6 pt-24">
             <h1 className="text-4xl font-bold tracking-tight text-gray-900">
-              New Arrivals
+              Filter
             </h1>
 
             <div className="flex items-center">
@@ -284,19 +345,8 @@ export default function Filter({ children, categories, brands }) {
             </h2>
 
             <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-4">
-              {/* Filters */}
               <form className="hidden lg:block">
                 <h3 className="sr-only">Categories</h3>
-                <ul
-                  role="list"
-                  className="space-y-4 border-b border-gray-200 pb-6 text-sm font-medium text-gray-900"
-                >
-                  {subCategories.map((category) => (
-                    <li key={category.name}>
-                      <a href={category.href}>{category.name}</a>
-                    </li>
-                  ))}
-                </ul>
 
                 {filters.map((section) => (
                   <Disclosure
@@ -306,59 +356,58 @@ export default function Filter({ children, categories, brands }) {
                   >
                     {({ open }) => (
                       <>
-                        <h3 className="-my-3 flow-root">
-                          <Disclosure.Button className="flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
-                            <span className="font-medium text-gray-900">
-                              {section.name}
-                            </span>
-                            <span className="ml-6 flex items-center">
-                              {open ? (
-                                <HiMinus
-                                  className="h-5 w-5"
-                                  aria-hidden="true"
-                                />
-                              ) : (
-                                <HiPlus
-                                  className="h-5 w-5"
-                                  aria-hidden="true"
-                                />
-                              )}
-                            </span>
-                          </Disclosure.Button>
-                        </h3>
-                        <Disclosure.Panel className="pt-6">
-                          <div className=" flex flex-wrap gap-y-5 items-center">
-                            {section.options.map((option, optionIdx) => (
-                              <div
-                                key={option.value}
-                                className="flex items-center w-1/2"
-                              >
-                                <input
-                                  id={`filter-${section.id}-${optionIdx}`}
-                                  name={`${section.id}`}
-                                  defaultValue={option.value}
-                                  type="checkbox"
-                                  defaultChecked={option.checked}
-                                  className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                                  onClick={handleChecked}
-                                />
-                                <label
-                                  htmlFor={`filter-${section.id}-${optionIdx}`}
-                                  className="ml-3 text-sm text-gray-600"
+                        <Disclosure.Button className="flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
+                          <span className="font-medium text-gray-900">
+                            {section.name}
+                          </span>
+                          <span className="ml-6 flex items-center">
+                            {open ? (
+                              <HiMinus className="h-5 w-5" aria-hidden="true" />
+                            ) : (
+                              <HiPlus className="h-5 w-5" aria-hidden="true" />
+                            )}
+                          </span>
+                        </Disclosure.Button>
+
+                        {!open && (
+                          <Disclosure className="pt-6">
+                            <div className=" flex flex-wrap gap-y-5 items-center">
+                              {section.options.map((option, optionIdx) => (
+                                <div
+                                  key={option.value}
+                                  className="flex items-center w-1/2"
                                 >
-                                  {option.label}
-                                </label>
-                              </div>
-                            ))}
-                          </div>
-                        </Disclosure.Panel>
+                                  <input
+                                    id={`filter-${section.id}-${optionIdx}`}
+                                    name={`${section.id}`}
+                                    defaultValue={option.value}
+                                    type="checkbox"
+                                    defaultChecked={option.chekced}
+                                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                    onChange={(e) => {
+                                      section.setFilter({
+                                        e,
+                                        id: option.id,
+                                        name: option.value,
+                                      });
+                                    }}
+                                  />
+                                  <label
+                                    htmlFor={`filter-${section.id}-${optionIdx}`}
+                                    className="ml-3 text-sm text-gray-600"
+                                  >
+                                    {option.label}
+                                  </label>
+                                </div>
+                              ))}
+                            </div>
+                          </Disclosure>
+                        )}
                       </>
                     )}
                   </Disclosure>
                 ))}
               </form>
-
-              {/* Product grid */}
               <div className="lg:col-span-3">{children}</div>
             </div>
           </section>
