@@ -3,9 +3,9 @@ import getProducts from "@/lib/getProduct";
 import Card from "@/components/card/card";
 
 export default async function Products({
-  searchParams: { page, categories, brands },
+  searchParams: { page, category, brands },
 }) {
-  const { products } = await getProducts(page, 20, categories, brands);
+  const { products } = await getProducts(page, 20, category, brands);
 
   return (
     <div className="overflow-x-auto rounded-2xl py-4">
@@ -16,7 +16,7 @@ export default async function Products({
               <Card
                 id={id}
                 name={name}
-                Images={Images}
+                url={`http://localhost:5000/images/item/${id}/${Images?.[0].name}`}
                 Categorie={Categorie}
                 brandId={brandId}
                 Brand={Brand}
@@ -29,7 +29,7 @@ export default async function Products({
         totalItems={products.totalProducts}
         currentPage={products.currentPage}
         itemsPerPage={20}
-        renderPageLink={(page) => `/products?page=${page}?`}
+        renderPageLink={(page) => `/products?page=${page}`}
       />
     </div>
   );

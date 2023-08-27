@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Listbox, Disclosure } from "@headlessui/react";
 import { HiChevronDown, HiChevronUp } from "react-icons/hi2";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 const START = 0;
 const LIMIT = 8;
 
@@ -9,9 +10,44 @@ export default function FilterCategories({ categories, open }) {
   const [expand, setExpand] = useState(false);
   const [category, setCategory] = useState([]);
 
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (searchParams.get("category")) {
+      const toArray = searchParams.get("category").split(",");
+      setCategory(toArray);
+    }
+    const params = new URLSearchParams(searchParams);
+    for (const [key, value] of searchParams.entries()) {
+      if (!value) {
+        params.delete(key);
+        const deleted = params.toString();
+        router.push(window.location.pathname + "?" + deleted);
+      }
+    }
+  }, [searchParams, pathname]);
+
+  const createQueryString = useCallback(
+    (name, value) => {
+      const params = new URLSearchParams(searchParams);
+      params.set(name, value);
+      return params.toString();
+    },
+    [searchParams]
+  );
+
   const loadMore = () => {
     setList(categories);
     setExpand(true);
+  };
+
+  const checked = (name) => {
+    if (category.indexOf(name) !== -1) {
+      return true;
+    }
+    return false;
   };
 
   const hideMore = () => {
@@ -30,14 +66,20 @@ export default function FilterCategories({ categories, open }) {
   };
 
   const handleChange = (e) => {
-    const { value, checked } = e.target;
+    const { value, checked, name } = e.target;
+    let newArr = [...category];
     if (checked) {
-      setCategory([...category, value]);
+      newArr = [...category, value];
+      setCategory(newArr);
     } else {
-      const remove = category.filter((e) => e !== value);
-      setCategory(remove);
+      newArr.splice(category.indexOf(value), 1);
+      setCategory(newArr);
     }
+    router.push(
+      window.location.pathname + "?" + createQueryString(name, newArr)
+    );
   };
+
   return (
     <>
       <Disclosure.Button className="flex w-full items-center justify-between font-semibold text-sm bg-white py-3 text-black">
@@ -59,8 +101,9 @@ export default function FilterCategories({ categories, open }) {
                       name="category"
                       type="checkbox"
                       defaultValue={categorie.name}
+                      defaultChecked={checked(categorie.name)}
                       className="h-4 w-4 border-indigo-700 text-indigo-600 focus:ring-0"
-                      onChange={handleChange}
+                      onClick={handleChange}
                     />
                     <label className="ml-3 min-w-0 flex-1">
                       {capitalEachWords(categorie.name)}

@@ -1,10 +1,10 @@
 import Image from "next/image";
-export default function Card({ id, name, Images, Categorie, brandId, Brand }) {
+export default function Card({ name, url, Categorie, brandId, Brand }) {
   return (
     <div className="group relative mb-8 flex flex-col">
       <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md lg:aspect-none lg:h-60">
         <Image
-          src={`http://localhost:5000/images/item/${id}/${Images?.[0].name}`}
+          src={url}
           alt={name}
           width={300}
           height={300}

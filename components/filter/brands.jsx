@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Listbox, Disclosure } from "@headlessui/react";
 import { HiChevronDown, HiChevronUp } from "react-icons/hi2";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
+
 const START = 0;
 const LIMIT = 20;
 
@@ -8,6 +10,35 @@ export default function FilterBrands({ brands, open }) {
   const [list, setList] = useState(brands.slice(START, LIMIT));
   const [expand, setExpand] = useState(false);
   const [merk, setMerk] = useState([]);
+
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (searchParams.get("brands")) {
+      const toArray = searchParams.get("brands").split(",");
+      setMerk(toArray);
+    }
+
+    const params = new URLSearchParams(searchParams);
+    for (const [key, value] of searchParams.entries()) {
+      if (!value) {
+        params.delete(key);
+        const deleted = params.toString();
+        router.push(window.location.pathname + "?" + deleted);
+      }
+    }
+  }, [searchParams, pathname]);
+
+  const createQueryString = useCallback(
+    (name, value) => {
+      const params = new URLSearchParams(searchParams);
+      params.set(name, value);
+      return params.toString();
+    },
+    [searchParams]
+  );
 
   const loadMore = () => {
     setList(brands);
@@ -19,9 +50,17 @@ export default function FilterBrands({ brands, open }) {
     setExpand(false);
   };
 
+  const checked = (name) => {
+    if (merk.indexOf(name) !== -1) {
+      return true;
+    }
+    return false;
+  };
+
   const capitalEachWords = (word) => {
-    const words = word.split(" ");
+    const words = word.toLowerCase().split(" ");
     const capital = words
+
       .map((word) => {
         return word[0].toUpperCase() + word.substring(1);
       })
@@ -30,14 +69,20 @@ export default function FilterBrands({ brands, open }) {
   };
 
   const handleChange = (e) => {
-    const { value, checked } = e.target;
+    const { value, checked, name } = e.target;
+    let newArr = [...merk];
     if (checked) {
-      setMerk([...merk, value]);
+      newArr = [...merk, value];
+      setMerk(newArr);
     } else {
-      const remove = merk.filter((e) => e !== value);
-      setMerk(remove);
+      newArr.splice(merk.indexOf(value), 1);
+      setMerk(newArr);
     }
+    router.push(
+      window.location.pathname + "?" + createQueryString(name, newArr)
+    );
   };
+
   return (
     <>
       <Disclosure.Button className="flex w-full items-center justify-between font-semibold text-sm bg-white py-3 text-black">
@@ -57,11 +102,12 @@ export default function FilterBrands({ brands, open }) {
                     <div className="flex items-center">
                       <input
                         id="filter-mobile-merk-1"
-                        name="merk"
+                        name="brands"
                         type="checkbox"
                         defaultValue={brand.name}
+                        defaultChecked={checked(brand.name)}
                         className="h-4 w-4 border-indigo-700 text-indigo-600 focus:ring-0"
-                        onChange={handleChange}
+                        onClick={handleChange}
                       />
                       <label className="ml-3 min-w-0 flex-1">
                         {capitalEachWords(brand.name)}
