@@ -9,7 +9,7 @@ const Header = () => {
 
   return (
     <header className="bg-white h-20">
-      <nav className="h-full flex justify-between container items-center">
+      <nav className="h-full flex justify-between container mx-auto items-center">
         <div>
           <Link href="/" className="text-ct-dark-600 text-2xl font-semibold">
             CodevoWeb
@@ -22,8 +22,8 @@ const Header = () => {
             </Link>
           </li>
           <li>
-            <Link href="/example" className="text-ct-dark-600">
-              example
+            <Link href="/products" className="text-ct-dark-600">
+              Products
             </Link>
           </li>
           {!user && (
@@ -33,11 +33,7 @@ const Header = () => {
                   Login
                 </Link>
               </li>
-              <li>
-                <Link href="/register" className="text-ct-dark-600">
-                  Register
-                </Link>
-              </li>
+
             </>
           )}
           {user && (

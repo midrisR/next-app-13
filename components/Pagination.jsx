@@ -1,7 +1,6 @@
 import Link from "next/link";
 import usePagination from "@/hooks/usePagination";
 import NextPrev from "./nextPrev";
-
 export const dotts = "...";
 
 export default function Pagination({
@@ -32,11 +31,10 @@ export default function Pagination({
             <Link
               key={i}
               href={renderPageLink(pageNumber)}
-              className={`${
-                pageNumber === currentPage
-                  ? "text-white bg-black"
-                  : "text-black"
-              } h-8 w-8 rounded flex items-center justify-center leading-8`}
+              className={`${pageNumber === currentPage
+                ? "text-white bg-black"
+                : "text-black"
+                } h-8 w-8 rounded flex items-center justify-center leading-8`}
             >
               {pageNumber ? pageNumber : null}
             </Link>

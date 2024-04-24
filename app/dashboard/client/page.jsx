@@ -3,6 +3,7 @@ import Table from "./components/table";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import Create from "./components/create";
+
 export default async function Client() {
   const { accessToken } = await getServerSession(authOptions);
   const client = await getClient();

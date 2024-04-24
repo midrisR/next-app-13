@@ -7,12 +7,11 @@ import Pagination from "@/components/pagination/index";
 
 export default function Table({ data, accessToken }) {
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
-
+  const itemsPerPage = 10;
   const onPageChange = (page) => {
     setCurrentPage(page);
   };
-  const paginatedPosts = paginate(data, currentPage, pageSize);
+  const paginatedPosts = paginate(data, currentPage, itemsPerPage);
 
   return (
     <div className="overflow-x-auto w-full">
@@ -21,10 +20,11 @@ export default function Table({ data, accessToken }) {
         <Tbody data={paginatedPosts} accessToken={accessToken} />
       </table>
       <Pagination
-        items={data.length}
+        totalItems={data.length}
         currentPage={currentPage}
-        pageSize={pageSize}
+        itemsPerPage={itemsPerPage}
         onPageChange={onPageChange}
+
       />
     </div>
   );

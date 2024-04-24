@@ -8,7 +8,7 @@ export default function Modal({ children, onSubmit, icon, width }) {
   function closeModal() {
     setIsOpen(false);
   }
-
+  ``
   const openModal = () => {
     setIsOpen(true);
   };
@@ -60,9 +60,8 @@ export default function Modal({ children, onSubmit, icon, width }) {
                 leaveTo="opacity-0 scale-95"
               >
                 <Dialog.Panel
-                  className={`w-full ${
-                    width ? width : "lg:max-w-md"
-                  } transform rounded-2xl relative bg-white p-6 text-left align-middle shadow-xl transition-all`}
+                  className={`${width ? `lg:${width}` : "lg:max-w-md"
+                    } transform rounded-2xl relative bg-white p-6 text-left align-middle shadow-xl transition-all`}
                 >
                   <div className="mt-2">{children}</div>
 

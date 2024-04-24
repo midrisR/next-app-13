@@ -35,6 +35,7 @@ export default function FilterBrands({ brands, open }) {
     (name, value) => {
       const params = new URLSearchParams(searchParams);
       params.set(name, value);
+      params.set('page', 1);
       return params.toString();
     },
     [searchParams]
@@ -60,7 +61,6 @@ export default function FilterBrands({ brands, open }) {
   const capitalEachWords = (word) => {
     const words = word.toLowerCase().split(" ");
     const capital = words
-
       .map((word) => {
         return word[0].toUpperCase() + word.substring(1);
       })

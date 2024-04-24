@@ -78,7 +78,6 @@ export default function tbody({ data, accessToken }) {
               icon={<FaEye />}
               data={data}
               id={val.id}
-              width={"w-1/4"}
               onSubmit={(e) => onSubmit(e, val.id)}
             >
               <div className="mt-2">

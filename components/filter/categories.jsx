@@ -15,8 +15,8 @@ export default function FilterCategories({ categories, open }) {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (searchParams.get("category")) {
-      const toArray = searchParams.get("category").split(",");
+    if (searchParams.get("categories")) {
+      const toArray = searchParams.get("categories").split(",");
       setCategory(toArray);
     }
     const params = new URLSearchParams(searchParams);
@@ -33,6 +33,7 @@ export default function FilterCategories({ categories, open }) {
     (name, value) => {
       const params = new URLSearchParams(searchParams);
       params.set(name, value);
+      params.set('page', 1);
       return params.toString();
     },
     [searchParams]
@@ -44,6 +45,7 @@ export default function FilterCategories({ categories, open }) {
   };
 
   const checked = (name) => {
+
     if (category.indexOf(name) !== -1) {
       return true;
     }
@@ -98,7 +100,7 @@ export default function FilterCategories({ categories, open }) {
                   <div className="flex items-center" key={categorie.id}>
                     <input
                       id="filter-mobile-category-1"
-                      name="category"
+                      name="categories"
                       type="checkbox"
                       defaultValue={categorie.name}
                       defaultChecked={checked(categorie.name)}

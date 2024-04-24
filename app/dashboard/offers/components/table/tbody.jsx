@@ -74,13 +74,14 @@ export default function tbody({ data, accessToken, vendors }) {
             {/* {format(new Date(val.date), "dd MMMM yyyy")} */}
             {val.date}
           </td>
+
+
           <td className="whitespace-nowrap flex gap-1 px-4 py-2">
             <Modal
               success={success}
               icon={<FaEye />}
               data={data}
               id={val.id}
-              width={"w-1/4"}
               onSubmit={(e) => onSubmit(e, val.id)}
             >
               <div className="mt-2">

@@ -54,12 +54,10 @@ export default function InputDate({
         ref={inputRef}
         value={calendar ? format(new Date(calendar), "MM/dd/yyyy") : ""}
         name={name}
-        fixedHeight={true}
         readOnly
         placeholder={format(new Date(), "MM/dd/yyyy")}
-        className={`w-full shadow-lg rounded-lg border p-3 text-sm mt-1 ${
-          getFieldError(name, error) ? "border-red-400 " : "border-gray-400 "
-        }`}
+        className={`w-full shadow-lg rounded-lg border p-3 text-sm mt-1 ${getFieldError(name, error) ? "border-red-400 " : "border-gray-400 "
+          }`}
         onClick={() => setOpen((open) => !open)}
       />
       {getMessageError(name, error)}

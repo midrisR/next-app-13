@@ -3,10 +3,9 @@ import getProducts from "@/lib/getProduct";
 import Card from "@/components/card/card";
 
 export default async function Products({
-  searchParams: { page, category, brands },
+  searchParams: { page, categories, brands },
 }) {
-  const { products } = await getProducts(page, 20, category, brands);
-
+  const { products } = await getProducts(page, 20, categories, brands);
   return (
     <div className="overflow-x-auto rounded-2xl py-4">
       <div className="w-full mt-12 flex flex-wrap gap-3 justify-center">
@@ -29,7 +28,7 @@ export default async function Products({
         totalItems={products.totalProducts}
         currentPage={products.currentPage}
         itemsPerPage={20}
-        renderPageLink={(page) => `/products?page=${page}`}
+        renderPageLink={(page) => `/products?page=${page}${categories ? `&categories=${categories}` : ''}${brands ? `&brands=${brands}` : ''}`}
       />
     </div>
   );
