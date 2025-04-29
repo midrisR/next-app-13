@@ -1,6 +1,6 @@
 import Card from "@/components/card/card";
 import Pagination from "@/components/Pagination";
-import getProducts from "@/lib/getProduct";
+import { getProducts } from "@/lib/getProduct";
 
 export default async function Page({ params: { id } }) {
   const { products } = await getProducts(id, 20);

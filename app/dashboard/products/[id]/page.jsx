@@ -4,7 +4,9 @@ import Table from "../components/table";
 import Pagination from "@/components/Pagination";
 import getProducts from "@/lib/getProduct";
 import { getCategories, getBrands } from "@/lib/api";
-export default async function Page({ params: { id } }) {
+
+export default async function Page({ params }) {
+  const { id } = await params;
   const { accessToken } = await getServerSession(authOptions);
   const { products } = await getProducts(id, 10);
   const [categories, brands] = await Promise.all([

@@ -8,7 +8,7 @@ export default async function Home() {
       <Header />
       <div className="w-full mt-12 flex flex-wrap gap-4 justify-center">
         {categories.map(({ id, name, image }) => (
-          <div className="w-1/6">
+          <div key={id} className="w-1/6">
             <Card
               key={id}
               name={name}

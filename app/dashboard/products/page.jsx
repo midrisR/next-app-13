@@ -1,13 +1,14 @@
 import Table from "./components/table";
 import Pagination from "@/components/Pagination";
-import getProducts from "@/lib/getProduct";
+import { getProducts } from "@/lib/getProduct";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 
 import { getCategories, getBrands } from "@/lib/api";
-export default async function Products() {
+export default async function Products({ searchParams }) {
+  const { page } = await searchParams;
   const { accessToken } = await getServerSession(authOptions);
-  const { products } = await getProducts(1, 10);
+  const { products } = await getProducts(page, 10);
   const [categories, brands] = await Promise.all([
     getCategories(),
     getBrands(),
@@ -25,7 +26,7 @@ export default async function Products() {
         totalItems={products.totalProducts}
         currentPage={products.currentPage}
         itemsPerPage={10}
-        renderPageLink={(page) => `/dashboard/products/${page}`}
+        renderPageLink={(page) => `/dashboard/products?page=${page}`}
       />
     </div>
   );

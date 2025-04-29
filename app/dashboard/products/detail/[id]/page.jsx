@@ -5,8 +5,9 @@ import { getCategories, getBrands } from "@/lib/api";
 import DashboardLayout from "@/components/dashboard";
 import Update from "../../components/update";
 
-export default async function Page({ params: { id } }) {
+export default async function Page({ params }) {
   const { accessToken } = await getServerSession(authOptions);
+  const { id } = await params;
   const [product, categories, brands] = await Promise.all([
     getProductById(id),
     getCategories(),

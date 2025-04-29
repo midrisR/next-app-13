@@ -35,7 +35,7 @@ export default function FilterBrands({ brands, open }) {
     (name, value) => {
       const params = new URLSearchParams(searchParams);
       params.set(name, value);
-      params.set('page', 1);
+      params.set("page", 1);
       return params.toString();
     },
     [searchParams]
@@ -127,10 +127,10 @@ export default function FilterBrands({ brands, open }) {
               </button>
             ) : (
               <button
-                className="w-full flex mt-4 justify-center items-center  space-x-3 text-gray-400"
+                className="w-full flex mt-4 pb-4 justify-center items-center  space-x-3 text-gray-400"
                 onClick={loadMore}
               >
-                <p className="text-sm block text-center">show more</p>
+                <p className="text-sm block text-center ">show more</p>
                 <HiChevronDown />
               </button>
             )}
