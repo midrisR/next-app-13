@@ -14,7 +14,7 @@ export default function ImageSlider({ images, id, alt }) {
       modules={[Navigation]}
     >
       {images.map((src, i) => (
-        <SwiperSlide key={i} style={{}}>
+        <SwiperSlide key={i} >
           <Image
             src={`http://localhost:5000/images/item/${id}/${src.name}`}
             alt={alt}

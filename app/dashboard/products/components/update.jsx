@@ -69,6 +69,19 @@ export default function Create({
       router.push("/dashboard/products");
     }
   };
+  const removeImg = async (id) => {
+    const remove = await fetch(`http://localhost:5000/api/image/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: accessToken,
+      },
+    });
+    const res = await remove.json();
+    if (res.success) {
+      setPreview([]);
+      router.refresh();
+    }
+  };
   return (
     <div className="w-4/6 mx-auto mt-12 rounded-lg bg-white p-8 shadow-lg lg:col-span-3 lg:p-12">
       {typeof error?.error === "string" && (

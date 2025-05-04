@@ -2,7 +2,7 @@ import Pagination from "@/components/Pagination";
 import { getProducts } from "@/lib/getProduct";
 import Card from "@/components/card/card";
 import LayoutWithSidebar from "@/components/LayoutWithSidebar";
-
+import { generateSlug } from "@/app/utils/slug";
 export default async function Products({ searchParams }) {
   const { page, categories, brands } = await searchParams;
   const { products } = await getProducts(page, 21, categories, brands);
@@ -18,7 +18,8 @@ export default async function Products({ searchParams }) {
                   key={id}
                   id={id}
                   name={name}
-                  url={`http://localhost:5000/images/item/${id}/${Images?.[0].name}`}
+                  url="/123"
+                  src={`http://localhost:5000/images/item/${id}/${Images?.[0].name}`}
                   Categorie={Categorie}
                   brandId={brandId}
                   Brand={Brand}

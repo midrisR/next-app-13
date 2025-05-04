@@ -5,6 +5,7 @@ import Pagination from "@/components/Pagination";
 import getProducts from "@/lib/getProduct";
 import { getCategories, getBrands } from "@/lib/api";
 
+
 export default async function Page({ params }) {
   const { id } = await params;
   const { accessToken } = await getServerSession(authOptions);

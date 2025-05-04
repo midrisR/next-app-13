@@ -2,7 +2,8 @@ import Card from "@/components/card/card";
 import Pagination from "@/components/Pagination";
 import { getProducts } from "@/lib/getProduct";
 
-export default async function Page({ params: { id } }) {
+export default async function Page({ params }) {
+  const {id} = await params
   const { products } = await getProducts(id, 20);
   return (
     <div className="overflow-x-auto rounded-2xl py-4">
@@ -13,7 +14,7 @@ export default async function Page({ params: { id } }) {
               <Card
                 id={id}
                 name={name}
-                Images={Images}
+                src={Images}
                 Categorie={Categorie}
                 brandId={brandId}
                 Brand={Brand}

@@ -2,6 +2,7 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 import Providers from "./providers";
 import { GlobalProvider } from "@/hooks/useContext";
+import Header  from "@/components/header";
 const inter = Inter({ subsets: ["latin"] });
 export const metadata = {
   title: "Create Next App",
@@ -12,8 +13,13 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className}>
+      <Header/>
         <Providers>
-          <GlobalProvider>{children}</GlobalProvider>
+          <GlobalProvider>
+            <div className="my-8">
+            {children}
+            </div>
+          </GlobalProvider>
         </Providers>
       </body>
     </html>

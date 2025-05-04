@@ -45,7 +45,6 @@ export default function FilterCategories({ categories, open }) {
   };
 
   const checked = (name) => {
-
     if (category.indexOf(name) !== -1) {
       return true;
     }
