@@ -3,7 +3,6 @@ import Link from "next/link";
 
 
 export default function Card({ id, name, src, Categorie, brandId, Brand,url }) {
-  console.log(src);
   
   return (
     <div className="group relative mb-8 flex flex-col shadow-md rounded-lg overflow-hidden max-h-80">

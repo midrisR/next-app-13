@@ -4,10 +4,10 @@ import LayoutWithSidebar from "@/components/LayoutWithSidebar";
 import Pagination from "@/components/Pagination";
 
 export default async function Page ({params,searchParams}){
-  const{id} = await params
-  const {page,brands} = await searchParams
-  const products = await getProductsByCategorie(id, page, 10)
-
+  const{id,slug} = await params
+  const {page,brands,categories} = await searchParams
+  const products = await getProductsByCategorie(id, page, 10,categories,brands)
+  
   return (
       <LayoutWithSidebar>
           <div className="overflow-x-auto">
@@ -34,8 +34,8 @@ export default async function Page ({params,searchParams}){
                   currentPage={products.currentPage}
                   itemsPerPage={20}
                   renderPageLink={(page) =>
-                    `/products?page=${page}${
-                      categories ? `&categories=${categories}` : ""
+                    `/products/${id}/${slug}?page=${page}${
+                      categories ?`&categories=${categories}` : ""
                     }${brands ? `&brands=${brands}` : ""}`
                   }
                 />

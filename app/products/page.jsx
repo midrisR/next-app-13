@@ -18,7 +18,7 @@ export default async function Products({ searchParams }) {
                   key={id}
                   id={id}
                   name={name}
-                  url="/123"
+                  url={`/product-detail/${id}/${name}`}
                   src={`http://localhost:5000/images/item/${id}/${Images?.[0].name}`}
                   Categorie={Categorie}
                   brandId={brandId}
