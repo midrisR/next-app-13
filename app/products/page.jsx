@@ -11,14 +11,14 @@ export default async function Products({ searchParams }) {
     <LayoutWithSidebar>
       <div className="overflow-x-auto">
         <div className="w-full flex flex-wrap justify-center">
-          <div className="w-full grid grid-cols-4 lg:grid-cols-3 gap-9">
+          <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-9">
             {products.products.map(
               ({ id, name, Images, Categorie, brandId, Brand }) => (
                 <Card
                   key={id}
                   id={id}
                   name={name}
-                  url="/123"
+                  url={`/product-detail/${id}/${name}`}
                   src={`http://localhost:5000/images/item/${id}/${Images?.[0].name}`}
                   Categorie={Categorie}
                   brandId={brandId}
