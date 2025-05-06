@@ -3,11 +3,19 @@ import Card from "@/components/card/card";
 import LayoutWithSidebar from "@/components/LayoutWithSidebar";
 import Pagination from "@/components/Pagination";
 
+<<<<<<< HEAD
 export default async function Page({ params, searchParams }) {
   const { id } = await params;
   const { page, brands, categories } = await searchParams;
   const products = await getProductsByCategorie(id, page, 10, brands);
 
+=======
+export default async function Page ({params,searchParams}){
+  const{id,slug} = await params
+  const {page,brands,categories} = await searchParams
+  const products = await getProductsByCategorie(id, page, 10,categories,brands)
+  
+>>>>>>> b98dd596f5eec3d80132eae7d2dc68fbe8af8a99
   return (
     <LayoutWithSidebar>
       <div className="overflow-x-auto">
@@ -34,8 +42,8 @@ export default async function Page({ params, searchParams }) {
                   currentPage={products.currentPage}
                   itemsPerPage={20}
                   renderPageLink={(page) =>
-                    `/products?page=${page}${
-                      categories ? `&categories=${categories}` : ""
+                    `/products/${id}/${slug}?page=${page}${
+                      categories ?`&categories=${categories}` : ""
                     }${brands ? `&brands=${brands}` : ""}`
                   }
                 /> */}
