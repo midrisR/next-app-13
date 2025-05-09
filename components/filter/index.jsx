@@ -9,6 +9,7 @@ import FilterBrands from "./brands";
 export default function Filter({ children, categories, brands }) {
   const { id } = useParams();
   const [isOpen, setIsOpen] = useState(false);
+  const x = useParams();
 
   return (
     <main className="mx-auto w-full px-4 sm:px-6 lg:px-28 relative">
@@ -35,12 +36,14 @@ export default function Filter({ children, categories, brands }) {
             ✕
           </button>
         </div>
-        <div className="p-4 overflow-y-auto max-h-screen">
-          <Disclosure as="div">
-            {({ open }) => (
-              <FilterCategories categories={categories} id={id} open={open} />
-            )}
-          </Disclosure>
+        <div className="p-4 overflow-y-auto  max-h-screen">
+          {!id && (
+            <Disclosure as="div">
+              {({ open }) => (
+                <FilterCategories categories={categories} id={id} open={open} />
+              )}
+            </Disclosure>
+          )}
           <Disclosure as="div">
             {({ open }) => <FilterBrands brands={brands} id={id} open={open} />}
           </Disclosure>
@@ -59,12 +62,19 @@ export default function Filter({ children, categories, brands }) {
       <section aria-labelledby="products-heading" className="pb-24 pt-6">
         <div className="grid grid-cols-1 gap-x-3 gap-y-10 lg:grid-cols-4">
           {/* Sidebar filter untuk desktop */}
-          <div className="hidden lg:block overflow-y-auto max-h-screen">
-            <Disclosure as="div">
-              {({ open }) => (
-                <FilterCategories categories={categories} id={id} open={open} />
-              )}
-            </Disclosure>
+          <div className="hidden lg:block max-h-screen">
+            {!id && (
+              <Disclosure as="div">
+                {({ open }) => (
+                  <FilterCategories
+                    categories={categories}
+                    id={id}
+                    open={open}
+                  />
+                )}
+              </Disclosure>
+            )}
+
             <Disclosure as="div">
               {({ open }) => (
                 <FilterBrands brands={brands} id={id} open={open} />

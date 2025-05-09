@@ -11,7 +11,7 @@ export default function Pagination({
 }) {
   const pages = usePagination(totalItems, currentPage, itemsPerPage);
   return (
-    <div className="flex gap-6 items-center justify-center my-8">
+    <div className="flex gap-x-4 md:gap-x-8 items-center justify-center my-8">
       <NextPrev
         urlPrev={renderPageLink(currentPage - 1)}
         urlNext={renderPageLink(currentPage + 1)}
@@ -23,7 +23,8 @@ export default function Pagination({
           return pageNumber === dotts ? (
             <span
               key={i}
-              className="py-2 rounded-full text-sm font-semibold text-black"
+              className="min-h-9.5 min-w-9.5 flex justify-center items-center py-2 px-3 text-sm rounded-lg focus:outline-hidden focus:bg-gray-300 disabled:opacity-50 disabled:pointer-events-none"
+              aria-current="page"
             >
               {pageNumber}
             </span>
@@ -33,9 +34,9 @@ export default function Pagination({
               href={renderPageLink(pageNumber)}
               className={`${
                 pageNumber === currentPage
-                  ? "text-white bg-black"
-                  : "text-black"
-              } h-8 w-8 rounded flex items-center justify-center leading-8`}
+                  ? "text-gray-800 font-bold py-2 px-3 bg-gray-200 text-gray-800 "
+                  : "text-gray-700"
+              } min-h-9.5 min-w-9.5 flex justify-center items-center py-2 px-3 text-sm`}
             >
               {pageNumber ? pageNumber : null}
             </Link>

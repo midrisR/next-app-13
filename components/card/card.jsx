@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 
-<<<<<<< HEAD
 export default function Card({
   id,
   name,
@@ -11,13 +10,6 @@ export default function Card({
   Brand,
   url,
 }) {
-  console.log(src);
-
-=======
-
-export default function Card({ id, name, src, Categorie, brandId, Brand,url }) {
-  
->>>>>>> b98dd596f5eec3d80132eae7d2dc68fbe8af8a99
   return (
     <div className="group relative mb-8 flex flex-col shadow-lg border border-gray-200 rounded-lg overflow-hidden max-h-80">
       <Image

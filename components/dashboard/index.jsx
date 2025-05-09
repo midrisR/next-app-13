@@ -4,6 +4,7 @@ import TopNavigation from "./topnavigation";
 import SideNavigation from "./sidenavigation";
 import Overlay from "./overlay";
 import { GlobalProvider } from "@/hooks/useContext";
+
 export default function DashboardLayout({ children }) {
   const [open, setOpen] = useState(false);
   const [resize, setResize] = useState(true);

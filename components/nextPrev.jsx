@@ -30,9 +30,9 @@ export default function NextPrev({
       {currentPage > 1 && (
         <button
           onClick={handlePrev}
-          className="flex h-8 w-8 rounded items-center justify-center leading-8 text-black"
+          className="flex rounded items-center justify-center leading-8 text-black"
         >
-          <FaChevronLeft color="black" />
+          <FaChevronLeft />
         </button>
       )}
       {children}

@@ -22,10 +22,17 @@ export default function FilterBrands({ brands, open }) {
     }
 
     const params = new URLSearchParams(searchParams);
+    let modified = false;
     for (const [key, value] of searchParams.entries()) {
       if (!value) {
         params.delete(key);
-        const deleted = params.toString();
+        modified = true;
+      }
+    }
+
+    if (modified) {
+      const deleted = params.toString();
+      if (deleted !== searchParams.toString()) {
         router.push(window.location.pathname + "?" + deleted);
       }
     }
@@ -107,7 +114,7 @@ export default function FilterBrands({ brands, open }) {
                         defaultValue={brand.name}
                         defaultChecked={checked(brand.name)}
                         className="h-4 w-4 border-indigo-700 text-indigo-600 focus:ring-0"
-                        onClick={handleChange}
+                        onChange={handleChange}
                       />
                       <label className="ml-3 min-w-0 flex-1">
                         {capitalEachWords(brand.name)}

@@ -1,12 +1,15 @@
 import Header from "@/components/header";
 import { getCategories } from "@/lib/api";
 import Card from "@/components/card/card";
+
 export default async function Home() {
   const categories = await getCategories();
   return (
-      <div className="w-full mt-12 flex flex-wrap gap-4 justify-center">
+    <>
+      <Header />
+      <div className="w-full mt-12 flex flex-wrap justify-center">
         {categories.map(({ id, name, image }) => (
-          <div key={id} className="w-1/6">
+          <div key={id} className="w-1/4 px-8">
             <Card
               key={id}
               id={id}
@@ -17,6 +20,6 @@ export default async function Home() {
           </div>
         ))}
       </div>
-
+    </>
   );
 }
