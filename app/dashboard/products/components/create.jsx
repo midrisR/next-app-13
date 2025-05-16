@@ -63,7 +63,7 @@ export default function Create({ categories, brands, accessToken }) {
   };
   return (
     <div className="my-4">
-      <Modal icon="create product" width="3/6" onSubmit={onSubmit}>
+      <Modal icon="add product" width="3/6" onSubmit={onSubmit}>
         {typeof error?.error === "string" && (
           <div
             role="alert"

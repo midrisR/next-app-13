@@ -79,7 +79,7 @@ export default function tbody({ data, accessToken }) {
 
           <td className="whitespace-nowrap flex gap-1 px-4 py-2">
             <Modal
-              icon={<FaEye />}
+              icon="view"
               data={data}
               id={val.id}
               onSubmit={(e) => onSubmit(e, val.id)}

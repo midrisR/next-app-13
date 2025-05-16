@@ -1,9 +1,8 @@
 "use client";
 import Link from "next/link";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { GlobalContext } from "@/hooks/useContext";
 import { useRouter } from "next/navigation";
-import { FaEye } from "react-icons/fa6";
 import ModalDelete from "@/components/modal/delete";
 
 export default function Tbody({ data, accessToken }) {
@@ -36,9 +35,9 @@ export default function Tbody({ data, accessToken }) {
           <td className="whitespace-nowrap flex gap-1 px-4 py-2">
             <Link
               href={`/dashboard/products/detail/${id}`}
-              className="inline-flex items-center rounded bg-indigo-600 px-4 py-2 text-xs  text-white hover:bg-indigo-700"
+              className="h-8 whitespace-nowrap justify-center rounded-full px-3 py-1 text-sm font-medium text-indigo-500 hover:text-white border border-slate-200 shadow-sm hover:bg-indigo-600 focus-visible:outline-none focus-visible:ring focus-visible:ring-indigo-300 transition-colors group"
             >
-              <FaEye />
+              view
             </Link>
             <ModalDelete handleDelete={() => removeProduct(id)} />
           </td>

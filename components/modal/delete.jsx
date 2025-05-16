@@ -1,7 +1,6 @@
 "use client";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useState } from "react";
-import { FaTrashCan } from "react-icons/fa6";
 
 export default function ModalDelete({ handleDelete }) {
   let [isOpen, setIsOpen] = useState(false);
@@ -20,9 +19,9 @@ export default function ModalDelete({ handleDelete }) {
         <button
           type="button"
           onClick={openModal}
-          className="rounded-md bg-red-500 px-4 py-2 text-sm font-medium text-white"
+          className="rounded-none bg-red-900 px-4 py-2 text-sm font-normal text-white"
         >
-          <FaTrashCan />
+          delete
         </button>
       </div>
 
