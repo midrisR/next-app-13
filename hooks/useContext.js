@@ -25,19 +25,25 @@ export const GlobalProvider = ({ children }) => {
     });
   };
 
-  async function getAllProduct(page) {
+  async function getAllProduct({
+    page = 1,
+    perPage = 10,
+    categories = "",
+    brands = "",
+    token,
+  }) {
     const data = await fetch(
-      `http://localhost:5000/api/product?page=${page}&perPage=${PER_PAGE}`,
+      `http://localhost:5000/api/product?categories=${categories}&brands=${brands}&page=${page}&perPage=${perPage}`,
       {
         headers: {
           Authorization: session?.accessToken,
         },
       }
     );
-    const { products } = await data.json();
+    const res = await data.json();
     dispatch({
       type: "GET_ALL_PRODUCT",
-      payload: products,
+      payload: { products: res.products, total: res.products.totalProducts },
     });
   }
 

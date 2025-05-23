@@ -11,14 +11,14 @@ export default function ImageSlider({ images, id, alt }) {
       zoom={true}
       navigation={true}
       pagination={{
-        type: 'fraction',
+        type: "fraction",
       }}
       modules={[Navigation]}
     >
       {images.map((src, i) => (
-        <SwiperSlide key={i} >
+        <SwiperSlide key={i}>
           <Image
-          className="h-96 overflow-hidden"
+            className="h-96 overflow-hidden"
             src={`http://localhost:5000/images/item/${id}/${src.name}`}
             alt={alt}
             width={500}

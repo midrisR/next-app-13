@@ -28,8 +28,6 @@ export default async function Page({ params }) {
   const { id } = await params;
   const { product } = await getProductsById(id);
 
-  console.log(product);
-
   return (
     <>
       <Header />

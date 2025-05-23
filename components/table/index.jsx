@@ -1,5 +1,5 @@
-export default function Table({ columns, dataSource }) {
-  console.log(dataSource);
+export default function Table({ columns, dataSource }, props) {
+  console.log(props);
 
   return (
     <>
@@ -27,6 +27,7 @@ export default function Table({ columns, dataSource }) {
                   {data[col.dataIndex]}
                 </td>
               ))}
+              <td>{props}</td>
             </tr>
           ))}
         </tbody>

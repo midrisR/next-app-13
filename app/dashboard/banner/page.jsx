@@ -1,6 +1,8 @@
 // import Table from "@/components/table";
 import { getBanner } from "@/lib/api";
 import Table from "@/components/table";
+const Buton = () => <button>kilik</button>;
+
 export default async function Banner() {
   const banner = await getBanner();
   const columns = [
@@ -27,5 +29,5 @@ export default async function Banner() {
     key: val.id,
   }));
 
-  return <Table columns={columns} dataSource={results} />;
+  return <Table columns={columns} dataSource={results} button={<Buton />} />;
 }

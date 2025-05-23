@@ -18,7 +18,7 @@ export default function Card({
         width={300}
         height={300}
         loading="lazy"
-        className="w-full object-cover max-h-48 object-center transition duration-500 group-hover:scale-105 lg:w-full overflow-hidden"
+        className="w-full object-cover max-h-40 object-center transition duration-500 group-hover:scale-105 lg:w-full overflow-hidden"
       />
       <div className="flex-1 mt-8">
         <div className="text-sm text-gray-700 px-4">

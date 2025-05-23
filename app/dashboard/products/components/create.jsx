@@ -1,49 +1,90 @@
 "use client";
-import { useState, useRef } from "react";
-import Modal from "@/components/modal/modal";
-import Input from "@/components/form/input";
-import Select from "@/components/form/select";
-import InputFile from "@/components/form/inputFile";
-import Textarea from "@/components/form/textarea";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
+import {
+  Button,
+  Modal,
+  Input,
+  Form,
+  Select,
+  Space,
+  Upload,
+  message,
+} from "antd";
+import { PlusOutlined } from "@ant-design/icons";
+import { getFieldError, getMessageError } from "@/components/form/error";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
 export default function Create({ categories, brands, accessToken }) {
-  const [preview, setPreview] = useState([]);
+  const queryClient = useQueryClient();
+  const [form, setForm] = useState({
+    name: "",
+    description: "",
+    metaDescription: "",
+    metaKeywords: "",
+    categorieId: "",
+    brandId: "",
+    published: "",
+  });
+  const [images, setImages] = useState([]);
+  const [fileList, setFileList] = useState([]);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState("");
   const [error, setError] = useState({});
-  const router = useRouter();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
 
-  const imageRef = useRef("");
-  const nameRef = useRef("");
-  const categorieIdRef = useRef("");
-  const descriptionRef = useRef("");
-  const publishedRef = useRef("");
-  const brandIdRef = useRef("");
-  const tagRef = useRef("");
-  const metaDescriptionRef = useRef("");
-  const metaKeywordsRef = useRef("");
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
 
-  const hanldeInputFile = (e) => {
-    const imgData = [];
-    for (let i = 0; i < e.target.files.length; i++) {
-      imgData.push(e.target.files[i]);
+  const handleSelectChange = (field, value) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleCancel = () => setPreviewOpen(false);
+
+  const handlePreview = async (file) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj);
     }
-    setPreview(imgData);
+    setPreviewImage(file.url || file.preview);
+    setPreviewOpen(true);
+  };
+
+  const handleUploadChange = ({ fileList: newFileList }) => {
+    setFileList(newFileList);
+    const files = newFileList.map((file) => file.originFileObj).filter(Boolean);
+    setImages(files);
+  };
+
+  const beforeUpload = (file) => {
+    const isImage = file.type.startsWith("image/");
+    if (!isImage) {
+      message.error("Only image files are allowed!");
+    }
+    return isImage || Upload.LIST_IGNORE;
+  };
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
   };
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    const img = imageRef.current.files;
+    setConfirmLoading(true);
     const formData = new FormData();
-    formData.append("name", nameRef.current.value);
-    formData.append("categorieId", categorieIdRef.current.value);
-    formData.append("brandId", brandIdRef.current.value);
-    formData.append("published", publishedRef.current.value);
-    formData.append("description", descriptionRef.current.value);
-    formData.append("tag", tagRef.current.value);
-    formData.append("metaDescription", metaDescriptionRef.current.value);
-    formData.append("metaKeywords", metaKeywordsRef.current.value);
-    for (const key of Object.keys(img)) {
-      formData.append("images", img[key]);
+    Object.entries(form).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+    for (const img of images) {
+      formData.append("images", img);
     }
+
     const res = await fetch("http://localhost:5000/api/product", {
       method: "POST",
       body: formData,
@@ -51,136 +92,198 @@ export default function Create({ categories, brands, accessToken }) {
         Authorization: accessToken,
       },
     });
+
     const result = await res.json();
     if (!result.success) {
       setError(result.error);
+      setConfirmLoading(false);
     } else {
       setError({});
-      setPreview([]);
-      router.refresh();
+      setForm({
+        name: "",
+        description: "",
+        metaDescription: "",
+        metaKeywords: "",
+        categorieId: "",
+        brandId: "",
+        published: "",
+      });
+      setImages([]);
+      setFileList([]);
+      setTimeout(() => {
+        setIsModalOpen(false);
+        setConfirmLoading(false);
+      }, 1000);
     }
-    return result;
   };
+
   return (
-    <div className="my-4">
-      <Modal icon="add product" width="3/6" onSubmit={onSubmit}>
+    <>
+      <Button type="primary" onClick={showModal}>
+        Create Product
+      </Button>
+      <Modal
+        onOk={onSubmit}
+        open={isModalOpen}
+        onCancel={handleOk}
+        confirmLoading={confirmLoading}
+      >
         {typeof error?.error === "string" && (
           <div
             role="alert"
-            className="rounded border-s-4 border-red-500 bg-red-50 p-4"
+            className="rounded border-s-4 border-red-500 bg-red-50 p-4 mb-4"
           >
             <div className="flex items-center gap-2 text-red-800">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                className="h-5 w-5"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              <strong className="block font-medium">{error?.error} </strong>
+              <strong className="block font-medium">{error?.error}</strong>
             </div>
           </div>
         )}
-        <div className="flex mt-4 lg:col-span-3">
-          <div className="space-y-4  mx-auto">
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-2">
-              <Input
-                inputRef={nameRef}
-                error={error}
-                label="Name"
-                name="name"
-                type="text"
-                onChange={(e) => (nameRef.current.value = e.target.value)}
-              />
-              <Input
-                inputRef={metaDescriptionRef}
-                error={error}
-                label="Meta Description"
-                name="metaDescription"
-                type="text"
-                onChange={(e) =>
-                  (metaDescriptionRef.current.value = e.target.value)
-                }
-              />
-            </div>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <Input
-                inputRef={tagRef}
-                error={error}
-                label="Tags"
-                name="tag"
-                type="text"
-                onChange={(e) => (tagRef.current.value = e.target.value)}
-              />
-              <Input
-                inputRef={metaKeywordsRef}
-                error={error}
-                label="Meta Keywords"
-                name="metaKeywords"
-                type="text"
-                onChange={(e) =>
-                  (metaKeywordsRef.current.value = e.target.value)
-                }
-              />
-            </div>
 
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-              <Select
-                error={error}
-                label="Categorie"
-                name="categorieId"
-                data={categories}
-                onChange={(data) => (categorieIdRef.current.value = data)}
-                inputRef={categorieIdRef}
-              />
-
-              <Select
-                error={error}
-                label="Brand"
-                name="brandId"
-                data={brands}
-                onChange={(data) => (brandIdRef.current.value = data)}
-                inputRef={brandIdRef}
-              />
-
-              <div>
-                <Select
-                  error={error}
-                  label="Published"
-                  name="published"
-                  data={[
-                    { id: "0", name: "false" },
-                    { id: "1", name: "true" },
-                  ]}
-                  onChange={(data) => (publishedRef.current.value = data)}
-                  inputRef={publishedRef}
-                />
-              </div>
-            </div>
-            <InputFile
-              input
-              error={error}
-              name="images"
-              label="Image"
-              onChange={hanldeInputFile}
-              preview={preview}
-              inputRef={imageRef}
+        <Form layout="vertical">
+          <Form.Item
+            label="Name"
+            validateStatus={getFieldError("name", error) && "error"}
+            help={getMessageError("name", error)}
+          >
+            <Input
+              name="name"
+              value={form.name}
+              onChange={handleChange}
+              placeholder="Enter product name"
             />
+          </Form.Item>
 
-            <Textarea
-              inputRef={descriptionRef}
+          <Form.Item
+            label="Description"
+            validateStatus={getFieldError("description", error) && "error"}
+            help={getMessageError("description", error)}
+          >
+            <Input
               name="description"
-              error={error}
-              onChange={(e) => (descriptionRef.current.value = e.target.value)}
+              value={form.description}
+              onChange={handleChange}
+              placeholder="Enter description"
             />
-          </div>
-        </div>
+          </Form.Item>
+
+          <Form.Item
+            label="Meta Description"
+            validateStatus={getFieldError("metaDescription", error) && "error"}
+            help={getMessageError("metaDescription", error)}
+          >
+            <Input
+              name="metaDescription"
+              value={form.metaDescription}
+              onChange={handleChange}
+              placeholder="Meta description"
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Meta Keywords"
+            validateStatus={getFieldError("metaKeywords", error) && "error"}
+            help={getMessageError("metaKeywords", error)}
+          >
+            <Input
+              name="metaKeywords"
+              value={form.metaKeywords}
+              onChange={handleChange}
+              placeholder="Meta keywords"
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Publish"
+            validateStatus={getFieldError("published", error) && "error"}
+            help={getMessageError("published", error)}
+          >
+            <Select
+              style={{ width: 200 }}
+              showSearch
+              allowClear
+              defaultValue={true}
+              placeholder="Select brand"
+              options={[
+                { value: true, label: "true" },
+                { value: false, label: "false" },
+              ]}
+              onChange={(val) => handleSelectChange("published", val)}
+            />
+          </Form.Item>
+
+          <Space style={{ display: "flex", marginBottom: 16 }}>
+            <Form.Item
+              label="Brand"
+              validateStatus={getFieldError("brandId", error) && "error"}
+              help={getMessageError("brandId", error)}
+            >
+              <Select
+                style={{ width: 200 }}
+                showSearch
+                allowClear
+                placeholder="Select brand"
+                value={form.brandId || undefined}
+                options={brands?.map((b) => ({
+                  label: b.name,
+                  value: b.id,
+                }))}
+                onChange={(val) => handleSelectChange("brandId", val)}
+              />
+            </Form.Item>
+            <Form.Item
+              label="Categorie"
+              validateStatus={getFieldError("categorieId", error) && "error"}
+              help={getMessageError("categorieId", error)}
+            >
+              <Select
+                style={{ width: 200 }}
+                allowClear
+                placeholder="Select category"
+                options={categories?.map((c) => ({
+                  label: c.name,
+                  value: c.id,
+                }))}
+                onChange={(val) => handleSelectChange("categorieId", val)}
+              />
+            </Form.Item>
+          </Space>
+
+          <Form.Item label="Upload Images">
+            <Upload
+              listType="picture-card"
+              fileList={fileList}
+              onPreview={handlePreview}
+              onChange={handleUploadChange}
+              beforeUpload={beforeUpload}
+              multiple
+            >
+              {fileList.length >= 8 ? null : (
+                <div>
+                  <PlusOutlined />
+                  <div style={{ marginTop: 8 }}>Upload</div>
+                </div>
+              )}
+            </Upload>
+            <Modal
+              open={previewOpen}
+              title="Preview"
+              footer={null}
+              onCancel={handleCancel}
+            >
+              <img alt="preview" style={{ width: "100%" }} src={previewImage} />
+            </Modal>
+          </Form.Item>
+        </Form>
       </Modal>
-    </div>
+    </>
   );
 }
+
+// helper
+const getBase64 = (file) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+  });

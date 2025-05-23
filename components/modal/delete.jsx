@@ -1,7 +1,7 @@
 "use client";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useState } from "react";
-
+import { Button } from "antd";
 export default function ModalDelete({ handleDelete }) {
   let [isOpen, setIsOpen] = useState(false);
 
@@ -15,15 +15,9 @@ export default function ModalDelete({ handleDelete }) {
 
   return (
     <>
-      <div>
-        <button
-          type="button"
-          onClick={openModal}
-          className="rounded-none bg-red-900 px-4 py-2 text-sm font-normal text-white"
-        >
-          delete
-        </button>
-      </div>
+      <Button variant="outlined" size="small" danger onClick={openModal}>
+        delete
+      </Button>
 
       <Transition appear show={isOpen} as={Fragment}>
         <Dialog as="div" className="relative z-10" onClose={closeModal}>
