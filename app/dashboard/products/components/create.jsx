@@ -14,6 +14,7 @@ import { PlusOutlined } from "@ant-design/icons";
 import { getFieldError, getMessageError } from "@/components/form/error";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
+const { TextArea } = Input;
 export default function Create({ categories, brands, accessToken }) {
   const queryClient = useQueryClient();
   const [form, setForm] = useState({
@@ -31,7 +32,6 @@ export default function Create({ categories, brands, accessToken }) {
   const [previewImage, setPreviewImage] = useState("");
   const [error, setError] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [confirmLoading, setConfirmLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -66,25 +66,31 @@ export default function Create({ categories, brands, accessToken }) {
     return isImage || Upload.LIST_IGNORE;
   };
 
+  const resetForm = () => {
+    setForm({
+      name: "",
+      description: "",
+      metaDescription: "",
+      metaKeywords: "",
+      categorieId: "",
+      brandId: "",
+      published: "",
+    });
+    setImages([]);
+    setFileList([]);
+    setError({});
+  };
+
   const showModal = () => {
     setIsModalOpen(true);
   };
 
   const handleOk = () => {
+    resetForm();
     setIsModalOpen(false);
   };
 
-  const onSubmit = async (e) => {
-    e.preventDefault();
-    setConfirmLoading(true);
-    const formData = new FormData();
-    Object.entries(form).forEach(([key, value]) => {
-      formData.append(key, value);
-    });
-    for (const img of images) {
-      formData.append("images", img);
-    }
-
+  const createProduct = async (formData) => {
     const res = await fetch("http://localhost:5000/api/product", {
       method: "POST",
       body: formData,
@@ -95,26 +101,35 @@ export default function Create({ categories, brands, accessToken }) {
 
     const result = await res.json();
     if (!result.success) {
-      setError(result.error);
-      setConfirmLoading(false);
-    } else {
-      setError({});
-      setForm({
-        name: "",
-        description: "",
-        metaDescription: "",
-        metaKeywords: "",
-        categorieId: "",
-        brandId: "",
-        published: "",
-      });
-      setImages([]);
-      setFileList([]);
-      setTimeout(() => {
-        setIsModalOpen(false);
-        setConfirmLoading(false);
-      }, 1000);
+      throw result; // akan ditangkap di onError
     }
+    return result;
+  };
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: createProduct,
+    onSuccess: () => {
+      message.success("Produk berhasil dibuat");
+      queryClient.invalidateQueries({ queryKey: ["allData"] });
+      resetForm();
+      setIsModalOpen(false);
+    },
+    onError: (error) => {
+      // message.error("Gagal membuat produk");
+      setError(error.error || {});
+    },
+  });
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    Object.entries(form).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+    for (const img of images) {
+      formData.append("images", img);
+    }
+    mutate(formData);
   };
 
   return (
@@ -122,12 +137,7 @@ export default function Create({ categories, brands, accessToken }) {
       <Button type="primary" onClick={showModal}>
         Create Product
       </Button>
-      <Modal
-        onOk={onSubmit}
-        open={isModalOpen}
-        onCancel={handleOk}
-        confirmLoading={confirmLoading}
-      >
+      <Modal onOk={onSubmit} open={isModalOpen} onCancel={handleOk}>
         {typeof error?.error === "string" && (
           <div
             role="alert"
@@ -139,7 +149,7 @@ export default function Create({ categories, brands, accessToken }) {
           </div>
         )}
 
-        <Form layout="vertical">
+        <Form layout="vertical" preserve={false}>
           <Form.Item
             label="Name"
             validateStatus={getFieldError("name", error) && "error"}
@@ -150,19 +160,6 @@ export default function Create({ categories, brands, accessToken }) {
               value={form.name}
               onChange={handleChange}
               placeholder="Enter product name"
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Description"
-            validateStatus={getFieldError("description", error) && "error"}
-            help={getMessageError("description", error)}
-          >
-            <Input
-              name="description"
-              value={form.description}
-              onChange={handleChange}
-              placeholder="Enter description"
             />
           </Form.Item>
 
@@ -201,8 +198,8 @@ export default function Create({ categories, brands, accessToken }) {
               style={{ width: 200 }}
               showSearch
               allowClear
-              defaultValue={true}
-              placeholder="Select brand"
+              value={form.published || undefined}
+              placeholder="is publish?"
               options={[
                 { value: true, label: "true" },
                 { value: false, label: "false" },
@@ -238,6 +235,7 @@ export default function Create({ categories, brands, accessToken }) {
               <Select
                 style={{ width: 200 }}
                 allowClear
+                value={form.categorieId || undefined}
                 placeholder="Select category"
                 options={categories?.map((c) => ({
                   label: c.name,
@@ -272,6 +270,19 @@ export default function Create({ categories, brands, accessToken }) {
             >
               <img alt="preview" style={{ width: "100%" }} src={previewImage} />
             </Modal>
+          </Form.Item>
+
+          <Form.Item
+            label="Description"
+            validateStatus={getFieldError("description", error) && "error"}
+            help={getMessageError("description", error)}
+          >
+            <TextArea
+              name="description"
+              value={form.description}
+              onChange={handleChange}
+              placeholder="Enter description"
+            />
           </Form.Item>
         </Form>
       </Modal>
