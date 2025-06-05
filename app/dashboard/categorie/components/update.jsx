@@ -1,38 +1,71 @@
 "use client";
-import { useState } from "react";
-import {
-  Button,
-  Modal,
-  Input,
-  Form,
-  Select,
-  Space,
-  Upload,
-  message,
-} from "antd";
+import { useState, useEffect } from "react";
+import { Button, Modal, Input, Form, Select, Upload, message } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { getFieldError, getMessageError } from "@/components/form/error";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import ImgCrop from "antd-img-crop";
+import { updateCategorie, getCategoriesById } from "@/lib/api";
+import { useSession } from "next-auth/react";
 const { TextArea } = Input;
 
-export default function Create({ categories, brands, accessToken }) {
+export default function Update({ id }) {
   const queryClient = useQueryClient();
+  const { data: session, status } = useSession();
   const [form, setForm] = useState({
     name: "",
-    description: "",
-    metaDescription: "",
-    metaKeywords: "",
-    categorieId: "",
-    brandId: "",
-    published: "",
+    published: true,
   });
+
   const [images, setImages] = useState([]);
   const [fileList, setFileList] = useState([]);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [error, setError] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const categoryById = useMutation({
+    mutationFn: getCategoriesById,
+    onSuccess: (res) => {
+      setForm({
+        name: res.name,
+        published: res.published,
+      });
+
+      setFileList([
+        {
+          uid: res.id?.toString() || `img-${id}`,
+          name: res.name || `image-${id}`,
+          status: "done",
+          url: `http://localhost:5000/images/categories/${id}/${res.image}`,
+        },
+      ]);
+    },
+    onError: (err) => {
+      console.error("Failed to fetch user", err);
+    },
+  });
+
+  const handelRemoveImage = async (imgId) => {
+    const remove = await fetch(`http://localhost:5000/api/image/${imgId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: session?.accessToken,
+      },
+    });
+
+    const res = await remove.json();
+    if (res.success) {
+      console.log("success");
+    }
+  };
+  const showModal = () => {
+    setIsModalOpen((prev) => !prev);
+    categoryById.mutate(id);
+  };
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -70,33 +103,19 @@ export default function Create({ categories, brands, accessToken }) {
   const resetForm = () => {
     setForm({
       name: "",
-      description: "",
-      metaDescription: "",
-      metaKeywords: "",
-      categorieId: "",
-      brandId: "",
-      published: "",
+      published: true,
     });
     setImages([]);
     setFileList([]);
     setError({});
   };
 
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleOk = () => {
-    resetForm();
-    setIsModalOpen(false);
-  };
-
-  const createProduct = async (formData) => {
-    const res = await fetch("http://localhost:5000/api/product", {
-      method: "POST",
+  const upCat = async (formData) => {
+    const res = await fetch(`http://localhost:5000/api/categorie/${id}`, {
+      method: "PUT",
       body: formData,
       headers: {
-        Authorization: accessToken,
+        Authorization: session?.accessToken,
       },
     });
 
@@ -108,20 +127,19 @@ export default function Create({ categories, brands, accessToken }) {
   };
 
   const { mutate, isPending } = useMutation({
-    mutationFn: createProduct,
+    mutationFn: upCat,
     onSuccess: () => {
-      message.success("Produk berhasil dibuat");
-      queryClient.invalidateQueries({ queryKey: ["allData"] });
+      message.success("Categorie update is success");
+      queryClient.invalidateQueries({ queryKey: ["categorie"] });
       resetForm();
-      setIsModalOpen(false);
     },
     onError: (error) => {
+      message.error("Categorie update is error");
       setError(error.error || {});
     },
   });
 
-  const onSubmit = (e) => {
-    e.preventDefault();
+  const onSubmit = () => {
     const formData = new FormData();
     Object.entries(form).forEach(([key, value]) => {
       formData.append(key, value);
@@ -134,27 +152,12 @@ export default function Create({ categories, brands, accessToken }) {
 
   return (
     <>
-      <Button type="primary" onClick={showModal}>
-        Create Product
+      <Button size="small" type="primary" onClick={showModal}>
+        update
       </Button>
-      <Modal
-        onOk={onSubmit}
-        open={isModalOpen}
-        onCancel={handleOk}
-        destroyOnHidden={false}
-      >
-        {typeof error?.error === "string" && (
-          <div
-            role="alert"
-            className="rounded border-s-4 border-red-500 bg-red-50 p-4 mb-4"
-          >
-            <div className="flex items-center gap-2 text-red-800">
-              <strong className="block font-medium">{error?.error}</strong>
-            </div>
-          </div>
-        )}
 
-        <Form layout="vertical" preserve={false}>
+      <Modal open={isModalOpen} onCancel={closeModal} footer={null}>
+        <Form layout="vertical" preserve={false} onFinish={onSubmit}>
           <Form.Item
             label="Name"
             validateStatus={getFieldError("name", error) && "error"}
@@ -169,32 +172,6 @@ export default function Create({ categories, brands, accessToken }) {
           </Form.Item>
 
           <Form.Item
-            label="Meta Description"
-            validateStatus={getFieldError("metaDescription", error) && "error"}
-            help={getMessageError("metaDescription", error)}
-          >
-            <Input
-              name="metaDescription"
-              value={form.metaDescription}
-              onChange={handleChange}
-              placeholder="Meta description"
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Meta Keywords"
-            validateStatus={getFieldError("metaKeywords", error) && "error"}
-            help={getMessageError("metaKeywords", error)}
-          >
-            <Input
-              name="metaKeywords"
-              value={form.metaKeywords}
-              onChange={handleChange}
-              placeholder="Meta keywords"
-            />
-          </Form.Item>
-
-          <Form.Item
             label="Publish"
             validateStatus={getFieldError("published", error) && "error"}
             help={getMessageError("published", error)}
@@ -203,7 +180,7 @@ export default function Create({ categories, brands, accessToken }) {
               style={{ width: 200 }}
               showSearch
               allowClear
-              value={form.published || undefined}
+              value={form.published}
               placeholder="is publish?"
               options={[
                 { value: true, label: "true" },
@@ -213,44 +190,6 @@ export default function Create({ categories, brands, accessToken }) {
             />
           </Form.Item>
 
-          <Space style={{ display: "flex", marginBottom: 16 }}>
-            <Form.Item
-              label="Brand"
-              validateStatus={getFieldError("brandId", error) && "error"}
-              help={getMessageError("brandId", error)}
-            >
-              <Select
-                style={{ width: 200 }}
-                showSearch
-                allowClear
-                placeholder="Select brand"
-                value={form.brandId || undefined}
-                options={brands?.map((b) => ({
-                  label: b.name,
-                  value: b.id,
-                }))}
-                onChange={(val) => handleSelectChange("brandId", val)}
-              />
-            </Form.Item>
-            <Form.Item
-              label="Categorie"
-              validateStatus={getFieldError("categorieId", error) && "error"}
-              help={getMessageError("categorieId", error)}
-            >
-              <Select
-                style={{ width: 200 }}
-                allowClear
-                value={form.categorieId || undefined}
-                placeholder="Select category"
-                options={categories?.map((c) => ({
-                  label: c.name,
-                  value: c.id,
-                }))}
-                onChange={(val) => handleSelectChange("categorieId", val)}
-              />
-            </Form.Item>
-          </Space>
-
           <Form.Item label="Upload Images">
             <ImgCrop>
               <Upload
@@ -259,8 +198,9 @@ export default function Create({ categories, brands, accessToken }) {
                 onPreview={handlePreview}
                 onChange={handleUploadChange}
                 beforeUpload={beforeUpload}
+                // onRemove={(d) => handelRemoveImage(d.uid)}
               >
-                {fileList.length >= 8 ? null : (
+                {fileList.length >= 2 ? null : (
                   <div>
                     <PlusOutlined />
                     <div style={{ marginTop: 8 }}>Upload</div>
@@ -289,6 +229,11 @@ export default function Create({ categories, brands, accessToken }) {
               onChange={handleChange}
               placeholder="Enter description"
             />
+          </Form.Item>
+          <Form.Item>
+            <Button block htmlType="submit" type="primary">
+              Update Product
+            </Button>
           </Form.Item>
         </Form>
       </Modal>

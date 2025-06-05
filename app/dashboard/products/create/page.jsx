@@ -9,14 +9,18 @@ import {
   Space,
   Upload,
   message,
+  Typography,
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { getFieldError, getMessageError } from "@/components/form/error";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
+import { getBrands, getCategories } from "@/lib/api";
 import ImgCrop from "antd-img-crop";
 const { TextArea } = Input;
-
+const { Title } = Typography;
 export default function Create({ categories, brands, accessToken }) {
+  const { data: session, status } = useSession();
   const queryClient = useQueryClient();
   const [form, setForm] = useState({
     name: "",
@@ -32,7 +36,20 @@ export default function Create({ categories, brands, accessToken }) {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [error, setError] = useState({});
-  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const getDataSelect = async () => {
+    const [brands, categories] = await Promise.all([
+      getBrands(),
+      getCategories(),
+    ]);
+    return { brands, categories };
+  };
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["getDataSelect"], // tambahkan ke queryKey
+    queryFn: getDataSelect,
+    keepPreviousData: true,
+  });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -82,21 +99,12 @@ export default function Create({ categories, brands, accessToken }) {
     setError({});
   };
 
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleOk = () => {
-    resetForm();
-    setIsModalOpen(false);
-  };
-
   const createProduct = async (formData) => {
     const res = await fetch("http://localhost:5000/api/product", {
       method: "POST",
       body: formData,
       headers: {
-        Authorization: accessToken,
+        Authorization: session?.accessToken,
       },
     });
 
@@ -113,7 +121,6 @@ export default function Create({ categories, brands, accessToken }) {
       message.success("Produk berhasil dibuat");
       queryClient.invalidateQueries({ queryKey: ["allData"] });
       resetForm();
-      setIsModalOpen(false);
     },
     onError: (error) => {
       setError(error.error || {});
@@ -121,7 +128,7 @@ export default function Create({ categories, brands, accessToken }) {
   });
 
   const onSubmit = (e) => {
-    e.preventDefault();
+    // e.preventDefault();
     const formData = new FormData();
     Object.entries(form).forEach(([key, value]) => {
       formData.append(key, value);
@@ -133,28 +140,10 @@ export default function Create({ categories, brands, accessToken }) {
   };
 
   return (
-    <>
-      <Button type="primary" onClick={showModal}>
-        Create Product
-      </Button>
-      <Modal
-        onOk={onSubmit}
-        open={isModalOpen}
-        onCancel={handleOk}
-        destroyOnHidden={false}
-      >
-        {typeof error?.error === "string" && (
-          <div
-            role="alert"
-            className="rounded border-s-4 border-red-500 bg-red-50 p-4 mb-4"
-          >
-            <div className="flex items-center gap-2 text-red-800">
-              <strong className="block font-medium">{error?.error}</strong>
-            </div>
-          </div>
-        )}
-
-        <Form layout="vertical" preserve={false}>
+    <div className="bg-white rounded p-8">
+      <Title>Add new product</Title>
+      <div className="w-1/2">
+        <Form layout="vertical" preserve={false} onFinish={onSubmit}>
           <Form.Item
             label="Name"
             validateStatus={getFieldError("name", error) && "error"}
@@ -225,7 +214,7 @@ export default function Create({ categories, brands, accessToken }) {
                 allowClear
                 placeholder="Select brand"
                 value={form.brandId || undefined}
-                options={brands?.map((b) => ({
+                options={data?.brands?.map((b) => ({
                   label: b.name,
                   value: b.id,
                 }))}
@@ -242,7 +231,7 @@ export default function Create({ categories, brands, accessToken }) {
                 allowClear
                 value={form.categorieId || undefined}
                 placeholder="Select category"
-                options={categories?.map((c) => ({
+                options={data?.categories?.map((c) => ({
                   label: c.name,
                   value: c.id,
                 }))}
@@ -251,7 +240,11 @@ export default function Create({ categories, brands, accessToken }) {
             </Form.Item>
           </Space>
 
-          <Form.Item label="Upload Images">
+          <Form.Item
+            label="Upload Images"
+            validateStatus={getFieldError("images", error) && "error"}
+            help={getMessageError("images", error)}
+          >
             <ImgCrop>
               <Upload
                 listType="picture-card"
@@ -290,9 +283,14 @@ export default function Create({ categories, brands, accessToken }) {
               placeholder="Enter description"
             />
           </Form.Item>
+          <Form.Item>
+            <Button block htmlType="submit" type="primary">
+              Create
+            </Button>
+          </Form.Item>
         </Form>
-      </Modal>
-    </>
+      </div>
+    </div>
   );
 }
 

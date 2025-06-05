@@ -1,12 +1,12 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Table, Input, message } from "antd";
+import { Table, Input, message, Button, Flex } from "antd";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getProducts } from "@/lib/getProduct";
 import { deleteProduct, getBrands, getCategories } from "@/lib/api";
 import ModalDelete from "@/components/modal/delete";
 import { useSession } from "next-auth/react";
-import Create from "./components/create";
+import Link from "next/link";
 
 export default function Products() {
   const { data: session, status } = useSession();
@@ -46,11 +46,20 @@ export default function Products() {
       title: "Action",
       key: "action",
       render: (_, record) => (
-        <ModalDelete
-          handleDelete={() =>
-            removeProduct({ id: record.id, token: session?.accessToken })
-          }
-        />
+        <Flex gap="small">
+          <ModalDelete
+            handleDelete={() =>
+              removeProduct({ id: record.id, token: session?.accessToken })
+            }
+          />
+          <Button
+            type="primary"
+            size="small"
+            href={`/dashboard/products/detail/${record.id}`}
+          >
+            Update
+          </Button>
+        </Flex>
       ),
     },
   ];
@@ -87,13 +96,9 @@ export default function Products() {
   });
 
   return (
-    <div className="overflow-x-auto rounded-2xl shadow-xl bg-white py-4 px-4">
+    <div className="overflow-x-auto shadow rounded bg-white py-4 px-4">
       <div className="flex justify-between mb-4">
-        <Create
-          categories={data?.categories}
-          brands={data?.brands}
-          accessToken={session?.accessToken}
-        />
+        <Button href="/dashboard/products/create">Add Product</Button>
         <Input
           placeholder="Search products..."
           value={search}

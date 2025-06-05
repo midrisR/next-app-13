@@ -1,33 +1,43 @@
 "use client";
 import { useState } from "react";
-import TopNavigation from "./topnavigation";
-import SideNavigation from "./sidenavigation";
-import Overlay from "./overlay";
+import { Breadcrumb, Layout, Menu, theme } from "antd";
+const { Header, Content, Footer, Sider } = Layout;
+import items from "./items";
 
 export default function DashboardLayout({ children }) {
-  const [open, setOpen] = useState(false);
-  const [resize, setResize] = useState(true);
-
+  const [collapsed, setCollapsed] = useState(false);
   return (
-    <div className="h-screen overflow-hidden relative">
-      <div className="flex items-start">
-        <Overlay open={open} onClick={() => setOpen((prev) => !prev)} />
-        <SideNavigation
-          mobilePosition="right"
-          open={open}
-          setOpen={setOpen}
-          resize={resize}
+    <Layout style={{ minHeight: "100vh" }} theme="light">
+      <Sider
+        theme="light"
+        collapsible
+        collapsed={collapsed}
+        onCollapse={(value) => setCollapsed(value)}
+      >
+        <div className="min-h-8 rounded m-4 bg-gray-100 p-4">DASHBOARD</div>
+        <Menu
+          selectedKeys={["1", "11"]}
+          openKeys={["1"]}
+          mode="inline"
+          items={items}
         />
-        <div className="bg-slate-800 flex flex-col h-screen pl-0 w-full">
-          <TopNavigation
-            onClick={() => setOpen((prev) => !prev)}
-            changeSize={() => setResize((prev) => !prev)}
-          />
-          <main className="bg-indigo-100 h-screen overflow-auto pb-36 pt-4 px-2 md:pb-8 md:px-4 lg:px-6 lg:rounded-tl-xl">
+      </Sider>
+      <Layout style={{ background: "#f4f6f9" }}>
+        <Header style={{ padding: 0, backgroundColor: "#ffffff" }} />
+        <Content style={{ margin: "0 16px" }}>
+          <div
+            style={{
+              padding: 24,
+              minHeight: 360,
+            }}
+          >
             {children}
-          </main>
-        </div>
-      </div>
-    </div>
+          </div>
+        </Content>
+        <Footer style={{ textAlign: "center" }}>
+          Ant Design ©{new Date().getFullYear()} Created by Ant UED
+        </Footer>
+      </Layout>
+    </Layout>
   );
 }
