@@ -7,7 +7,7 @@ export default async function Home() {
   return (
     <>
       <Header />
-      <div className="w-full mt-12 flex flex-wrap justify-center">
+      <div className="container mx-auto mt-12 flex flex-wrap justify-center">
         {categories.map(({ id, name, image }) => (
           <div key={id} className="w-1/4 px-8">
             <Card

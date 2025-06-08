@@ -1,178 +1,207 @@
-// "use client";
-
-// import { useState, useCallback } from "react";
-// import { Button, Modal, Upload } from "antd";
-// // import ImgCrop from "antd-img-crop";
-// import getCroppedImg from "@/components/image/cropImage";
-// import { PlusOutlined } from "@ant-design/icons";
-// import Cropper from "react-easy-crop";
-// export default function Banner() {
-//   const [ModalOPen, setModalOPen] = useState(false);
-//   const [fileList, setFileList] = useState([]);
-//   const [cropModalVisible, setCropModalVisible] = useState(false);
-//   const [imageToCrop, setImageToCrop] = useState(null);
-//   const [crop, setCrop] = useState({ x: 0, y: 0 });
-//   const [zoom, setZoom] = useState(1);
-//   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
-
-//   const onChange = ({ fileList: newFileList }) => {
-//     setFileList(newFileList);
-//   };
-
-//   const showModal = () => {
-//     setModalOPen(true);
-//   };
-
-//   const handleOk = () => {
-//     setModalOPen(false);
-//   };
-//   const handleCancel = () => {
-//     setModalOPen(false);
-//   };
-//   const beforeUpload = (file) => {
-//     const reader = new FileReader();
-//     reader.addEventListener("load", () => {
-//       setImageToCrop(reader.result);
-//       setCropModalVisible(true);
-//     });
-//     reader.readAsDataURL(file);
-//     return false; // prevent automatic upload
-//   };
-
-//   const onCropComplete = useCallback((_, croppedAreaPixels) => {
-//     setCroppedAreaPixels(croppedAreaPixels);
-//   }, []);
-
-//   const handleCrop = async () => {
-//     const croppedImage = await getCroppedImg(imageToCrop, croppedAreaPixels);
-//     setFileList([
-//       ...fileList,
-//       {
-//         url: croppedImage,
-//       },
-//     ]);
-//     setCropModalVisible(false);
-//     setImageToCrop(null);
-//   };
-//   return (
-//     <>
-//       <Button type="primary" onClick={showModal}>
-//         Open Modal
-//       </Button>
-//       <Modal
-//         title="Basic Modal"
-//         closable={{ "aria-label": "Custom Close Button" }}
-//         open={ModalOPen}
-//         onOk={handleOk}
-//         onCancel={handleCancel}
-//       >
-//         <Upload
-//           listType="picture-card"
-//           fileList={fileList}
-//           beforeUpload={beforeUpload}
-//           onPreview={(file) => {
-//             window.open(file.url, "_blank");
-//           }}
-//           onRemove={(file) => {
-//             setFileList(fileList.filter((f) => f.uid !== file.uid));
-//           }}
-//         >
-//           {fileList.length >= 8 ? null : (
-//             <div>
-//               <PlusOutlined />
-//               <div style={{ marginTop: 8 }}>Upload</div>
-//             </div>
-//           )}
-//         </Upload>
-
-//         <Modal
-//           open={cropModalVisible}
-//           onCancel={() => setCropModalVisible(false)}
-//           onOk={handleCrop}
-//           okText="Crop & Save"
-//           width={400}
-//         >
-//           {imageToCrop && (
-//             <div style={{ position: "relative", height: 300, width: "100%" }}>
-//               <Cropper
-//                 image={imageToCrop}
-//                 crop={crop}
-//                 zoom={zoom}
-//                 aspect={1}
-//                 onCropChange={setCrop}
-//                 onZoomChange={setZoom}
-//                 onCropComplete={onCropComplete}
-//               />
-//             </div>
-//           )}
-//         </Modal>
-//       </Modal>
-//     </>
-//   );
-// }
-
 "use client";
-
-import React, { useState } from "react";
-import { Button, Modal, Upload } from "antd";
+import { useState } from "react";
+import {
+  Button,
+  Modal,
+  Input,
+  Form,
+  Select,
+  Upload,
+  message,
+  Spin,
+} from "antd";
+import { PlusOutlined } from "@ant-design/icons";
+import { getFieldError, getMessageError } from "@/components/form/error";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import ImgCrop from "antd-img-crop";
-export default function Banner() {
-  const [ModalOPen, setModalOPen] = useState(false);
+import { getBanner } from "@/lib/api";
+import Image from "next/image";
+
+export default function Banner({ accessToken }) {
+  const queryClient = useQueryClient();
+
+  const [error, setError] = useState({});
+  const [images, setImages] = useState([]);
   const [fileList, setFileList] = useState([]);
-  const onChange = ({ fileList: newFileList }) => {
-    setFileList(newFileList);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState("");
+  const [form, setForm] = useState({
+    name: "",
+    published: "",
+  });
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["banner"], // tambahkan ke queryKey
+    queryFn: getBanner,
+    keepPreviousData: true,
+  });
+  console.log(data);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const showModal = () => {
-    setModalOPen(true);
+  const handleSelectChange = (field, value) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleOk = () => {
-    setModalOPen(false);
-  };
-  const handleCancel = () => {
-    setModalOPen(false);
-  };
+  const handleCancel = () => setPreviewOpen(false);
 
-  const onPreview = async (file) => {
-    let src = file.url;
-    if (!src) {
-      src = await new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file.originFileObj);
-        reader.onload = () => resolve(reader.result);
-      });
+  const handlePreview = async (file) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj);
     }
-    const image = new Image();
-    image.src = src;
-    const imgWindow = window.open(src);
-    imgWindow?.document.write(image.outerHTML);
+    setPreviewImage(file.url || file.preview);
+    setPreviewOpen(true);
+  };
+
+  const handleUploadChange = ({ fileList: newFileList }) => {
+    setFileList(newFileList);
+    const files = newFileList.map((file) => file.originFileObj).filter(Boolean);
+    setImages(files);
+  };
+
+  const beforeUpload = (file) => {
+    const isImage = file.type.startsWith("image/");
+    if (!isImage) {
+      message.error("Only image files are allowed!");
+    }
+    return isImage || Upload.LIST_IGNORE;
+  };
+
+  const resetForm = () => {
+    setForm({
+      name: "",
+      published: "",
+    });
+    setImages([]);
+    setFileList([]);
+    setError({});
+  };
+
+  const cretaeCategorie = async (formData) => {
+    const res = await fetch("http://localhost:5000/api/categorie", {
+      method: "POST",
+      body: formData,
+      headers: {
+        Authorization: accessToken,
+      },
+    });
+
+    const result = await res.json();
+    if (!result.success) {
+      throw result; // akan ditangkap di onError
+    }
+    return result;
+  };
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: cretaeCategorie,
+    onSuccess: () => {
+      message.success("Produk berhasil dibuat");
+      queryClient.invalidateQueries({ queryKey: ["categorie"] });
+      resetForm();
+    },
+    onError: (error) => {
+      // message.error("Gagal membuat produk");
+      setError(error.error || {});
+    },
+  });
+  const onSubmit = (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    Object.entries(form).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+    for (const img of images) {
+      formData.append("images", img);
+    }
+    mutate(formData);
   };
 
   return (
-    <>
-      <Button type="primary" onClick={showModal}>
-        Open Modal
-      </Button>
-      <Modal
-        title="Basic Modal"
-        closable={{ "aria-label": "Custom Close Button" }}
-        open={ModalOPen}
-        onOk={handleOk}
-        onCancel={handleCancel}
-      >
-        <ImgCrop rotationSlider>
-          <Upload
-            action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
-            listType="picture-card"
-            fileList={fileList}
-            onChange={onChange}
-            onPreview={onPreview}
+    <div className="bg-white rounded p-8">
+      <div className="w-1/2">
+        <Form layout="vertical" onFinish={onSubmit} preserve={false}>
+          <Form.Item
+            label="Name"
+            validateStatus={getFieldError("name", error) && "error"}
+            help={getMessageError("name", error)}
           >
-            {fileList.length < 5 && "+ Upload"}
-          </Upload>
-        </ImgCrop>
-      </Modal>
-    </>
+            <Input
+              name="name"
+              value={form.name}
+              onChange={handleChange}
+              placeholder="Enter product name"
+            />
+          </Form.Item>
+          <Form.Item
+            label="Publish"
+            validateStatus={getFieldError("published", error) && "error"}
+            help={getMessageError("published", error)}
+          >
+            <Select
+              style={{ width: 200 }}
+              allowClear
+              defaultValue={true}
+              options={[
+                { value: true, label: "true" },
+                { value: false, label: "false" },
+              ]}
+              onChange={(val) => handleSelectChange("published", val)}
+            />
+          </Form.Item>
+          <Form.Item label="Upload Images">
+            <ImgCrop destroyOnHidden={true}>
+              <Upload
+                listType="picture-card"
+                fileList={fileList}
+                onPreview={handlePreview}
+                onChange={handleUploadChange}
+                beforeUpload={beforeUpload}
+              >
+                {fileList.length === 1 ? null : (
+                  <div>
+                    <PlusOutlined />
+                    <div style={{ marginTop: 8 }}>Upload</div>
+                  </div>
+                )}
+              </Upload>
+            </ImgCrop>
+            <Modal
+              destroyOnHidden={true}
+              open={previewOpen}
+              title="Preview"
+              footer={null}
+              onCancel={handleCancel}
+            >
+              <img alt="preview" style={{ width: "100%" }} src={previewImage} />
+            </Modal>
+          </Form.Item>
+          <Form.Item>
+            <Button block htmlType="submit" type="primary">
+              Create
+            </Button>
+          </Form.Item>
+        </Form>
+      </div>
+      <div>
+        {isLoading ? (
+          <Spin tip="Loading..." />
+        ) : (
+          <>
+            {data?.map((Banner, i) => (
+              <Image
+                key={i}
+                width={200}
+                height={100}
+                src={`http://localhost:5000/images/banner/${Banner.id}/${Banner.images}`}
+              />
+            ))}
+          </>
+        )}
+      </div>
+    </div>
   );
 }

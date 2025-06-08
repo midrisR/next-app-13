@@ -14,6 +14,7 @@ import { PlusOutlined } from "@ant-design/icons";
 import { getFieldError, getMessageError } from "@/components/form/error";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import ImgCrop from "antd-img-crop";
+
 export default function Create({ accessToken }) {
   const queryClient = useQueryClient();
   const [error, setError] = useState({});
@@ -156,8 +157,8 @@ export default function Create({ accessToken }) {
             />
           </Form.Item>
           <Form.Item label="Upload Images">
-            <ImgCrop>
-              <Upload
+            <ImgCrop  destroyOnHidden={true}>
+              <Upload 
                 listType="picture-card"
                 fileList={fileList}
                 onPreview={handlePreview}
@@ -172,7 +173,7 @@ export default function Create({ accessToken }) {
                 )}
               </Upload>
             </ImgCrop>
-            <Modal
+            <Modal  destroyOnHidden={true}
               open={previewOpen}
               title="Preview"
               footer={null}

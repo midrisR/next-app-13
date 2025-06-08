@@ -25,7 +25,7 @@ export default function Categorie() {
       queryClient.invalidateQueries({ queryKey: ["categorie"] });
     },
     onError: (error) => {
-      alert(error.message);
+      console.log(error.message);
     },
   });
   const columns = [
