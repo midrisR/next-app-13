@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Image from "next/image";
 import {
   Button,
   Modal,
@@ -9,15 +10,18 @@ import {
   Upload,
   message,
   Spin,
+  Table,
+  Tag,
+  Flex,
 } from "antd";
+import { useSession } from "next-auth/react";
 import { PlusOutlined } from "@ant-design/icons";
 import { getFieldError, getMessageError } from "@/components/form/error";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import ImgCrop from "antd-img-crop";
 import { getBanner } from "@/lib/api";
-import Image from "next/image";
-
-export default function Banner({ accessToken }) {
+export default function Banner() {
+  const { data: session, status } = useSession();
   const queryClient = useQueryClient();
 
   const [error, setError] = useState({});
@@ -25,6 +29,7 @@ export default function Banner({ accessToken }) {
   const [fileList, setFileList] = useState([]);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [form, setForm] = useState({
     name: "",
     published: "",
@@ -35,8 +40,50 @@ export default function Banner({ accessToken }) {
     queryFn: getBanner,
     keepPreviousData: true,
   });
-  console.log(data);
 
+  const columns = [
+    {
+      title: "Information",
+      dataIndex: "information",
+      key: "information",
+    },
+    {
+      title: "Image",
+      dataIndex: "images",
+      key: "images",
+      render: (_, record) => (
+        <Image
+          src={`http://localhost:5000/images/banner/${record.id}/${record.images}`}
+          width={100}
+          height={110}
+        />
+      ),
+    },
+    {
+      title: "Published",
+      dataIndex: "published",
+      key: "published",
+      render: (_, { published }) => (
+        <Tag color={published ? "green" : "red"} key={published}>
+          {published ? "True" : "Disable"}
+        </Tag>
+      ),
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (_, record) => <Flex gap="small"></Flex>,
+    },
+  ];
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    resetForm();
+    setIsModalOpen(false);
+  };
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -85,7 +132,7 @@ export default function Banner({ accessToken }) {
       method: "POST",
       body: formData,
       headers: {
-        Authorization: accessToken,
+        Authorization: session?.accessToken,
       },
     });
 
@@ -122,8 +169,11 @@ export default function Banner({ accessToken }) {
 
   return (
     <div className="bg-white rounded p-8">
-      <div className="w-1/2">
-        <Form layout="vertical" onFinish={onSubmit} preserve={false}>
+      <Button type="primary" onClick={showModal}>
+        Create Banner
+      </Button>
+      <Modal onOk={onSubmit} open={isModalOpen} onCancel={handleOk}>
+        <Form layout="vertical" preserve={false}>
           <Form.Item
             label="Name"
             validateStatus={getFieldError("name", error) && "error"}
@@ -179,26 +229,28 @@ export default function Banner({ accessToken }) {
               <img alt="preview" style={{ width: "100%" }} src={previewImage} />
             </Modal>
           </Form.Item>
-          <Form.Item>
-            <Button block htmlType="submit" type="primary">
-              Create
-            </Button>
-          </Form.Item>
         </Form>
-      </div>
+      </Modal>
       <div>
         {isLoading ? (
           <Spin tip="Loading..." />
         ) : (
           <>
-            {data?.map((Banner, i) => (
-              <Image
-                key={i}
-                width={200}
-                height={100}
-                src={`http://localhost:5000/images/banner/${Banner.id}/${Banner.images}`}
-              />
-            ))}
+            <Table
+              columns={columns}
+              dataSource={data || []}
+              loading={isLoading}
+              rowKey="id"
+              pagination={{
+                position: ["bottomCenter"],
+                pageSize: 10,
+              }}
+              onRow={() => {
+                return {
+                  className: "hover:bg-gray-100 text-sm lowercase",
+                };
+              }}
+            />
           </>
         )}
       </div>
