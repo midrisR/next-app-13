@@ -15,7 +15,7 @@ import { PlusOutlined } from "@ant-design/icons";
 import { getFieldError, getMessageError } from "@/components/form/error";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
-import { getBrands, getCategories } from "@/lib/api";
+import { getBrands, getCategories, createProduct } from "@/lib/api";
 import ImgCrop from "antd-img-crop";
 const { TextArea } = Input;
 const { Title } = Typography;
@@ -99,23 +99,7 @@ export default function Create({ categories, brands, accessToken }) {
     setError({});
   };
 
-  const createProduct = async (formData) => {
-    const res = await fetch("http://localhost:5000/api/product", {
-      method: "POST",
-      body: formData,
-      headers: {
-        Authorization: session?.accessToken,
-      },
-    });
-
-    const result = await res.json();
-    if (!result.success) {
-      throw result; // akan ditangkap di onError
-    }
-    return result;
-  };
-
-  const { mutate, isPending } = useMutation({
+  const { mutate } = useMutation({
     mutationFn: createProduct,
     onSuccess: () => {
       message.success("Produk berhasil dibuat");
@@ -136,7 +120,7 @@ export default function Create({ categories, brands, accessToken }) {
     for (const img of images) {
       formData.append("images", img);
     }
-    mutate(formData);
+    mutate({ formData, accessToken: session?.accessToken });
   };
 
   return (
@@ -221,6 +205,7 @@ export default function Create({ categories, brands, accessToken }) {
                 onChange={(val) => handleSelectChange("brandId", val)}
               />
             </Form.Item>
+
             <Form.Item
               label="Categorie"
               validateStatus={getFieldError("categorieId", error) && "error"}
@@ -228,6 +213,7 @@ export default function Create({ categories, brands, accessToken }) {
             >
               <Select
                 style={{ width: 200 }}
+                showSearch
                 allowClear
                 value={form.categorieId || undefined}
                 placeholder="Select category"

@@ -7,9 +7,9 @@ export default async function Home() {
   return (
     <>
       <Header />
-      <div className="container mx-auto mt-12 flex flex-wrap justify-center">
-        {categories.map(({ id, name, image }) => (
-          <div key={id} className="w-1/4 px-8">
+      <div className="py-10 px-12">
+        <div className="grid grid-flow-row gap-8 text-neutral-600 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {categories.map(({ id, name, image }) => (
             <Card
               key={id}
               id={id}
@@ -17,8 +17,8 @@ export default async function Home() {
               src={`http://localhost:5000/images/categories/${id}/${image}`}
               url={`/products/${id}/${name}`}
             />
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </>
   );

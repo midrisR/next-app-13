@@ -18,21 +18,22 @@ import { useSession } from "next-auth/react";
 import { PlusOutlined } from "@ant-design/icons";
 import { getFieldError, getMessageError } from "@/components/form/error";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
-import ImgCrop from "antd-img-crop";
-import { getBanner } from "@/lib/api";
+import { getBanner, deleteBanner, createBanner } from "@/lib/api";
+import ModalDelete from "@/components/modal/delete";
+import Update from "./components/update";
 export default function Banner() {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const queryClient = useQueryClient();
-
   const [error, setError] = useState({});
   const [images, setImages] = useState([]);
   const [fileList, setFileList] = useState([]);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [perPage, setPerPage] = useState(3);
   const [form, setForm] = useState({
     name: "",
-    published: "",
+    published: true,
   });
 
   const { data, isLoading } = useQuery({
@@ -41,21 +42,34 @@ export default function Banner() {
     keepPreviousData: true,
   });
 
+  const { mutate: removeBanner } = useMutation({
+    mutationFn: ({ id, token }) => deleteBanner(id, token),
+    onSuccess: () => {
+      message.success("banner berhasil dihapus");
+      queryClient.invalidateQueries({ queryKey: ["banner"] });
+    },
+    onError: (error) => {
+      console.log(error.message);
+    },
+  });
+
   const columns = [
     {
-      title: "Information",
-      dataIndex: "information",
-      key: "information",
+      title: "Name",
+      dataIndex: "name",
+      key: "name",
     },
     {
       title: "Image",
-      dataIndex: "images",
+      dataIndex: "image",
       key: "images",
       render: (_, record) => (
         <Image
-          src={`http://localhost:5000/images/banner/${record.id}/${record.images}`}
-          width={100}
-          height={110}
+          src={`http://localhost:5000/images/banner/${record.id}/${record.image}`}
+          alt="Gambar"
+          width={300}
+          height={0}
+          style={{ width: "120", height: "110" }}
         />
       ),
     },
@@ -72,7 +86,16 @@ export default function Banner() {
     {
       title: "Action",
       key: "action",
-      render: (_, record) => <Flex gap="small"></Flex>,
+      render: (_, record) => (
+        <Flex gap="small">
+          <ModalDelete
+            handleDelete={() =>
+              removeBanner({ id: record.id, token: session?.accessToken })
+            }
+          />
+          <Update id={record.id} accessToken={session?.accessToken} />
+        </Flex>
+      ),
     },
   ];
 
@@ -120,41 +143,26 @@ export default function Banner() {
   const resetForm = () => {
     setForm({
       name: "",
-      published: "",
+      published: true,
     });
     setImages([]);
     setFileList([]);
     setError({});
   };
 
-  const cretaeCategorie = async (formData) => {
-    const res = await fetch("http://localhost:5000/api/categorie", {
-      method: "POST",
-      body: formData,
-      headers: {
-        Authorization: session?.accessToken,
-      },
-    });
-
-    const result = await res.json();
-    if (!result.success) {
-      throw result; // akan ditangkap di onError
-    }
-    return result;
-  };
-
-  const { mutate, isPending } = useMutation({
-    mutationFn: cretaeCategorie,
+  const { mutate } = useMutation({
+    mutationFn: createBanner,
     onSuccess: () => {
-      message.success("Produk berhasil dibuat");
-      queryClient.invalidateQueries({ queryKey: ["categorie"] });
+      message.success("Banner berhasil dibuat");
+      queryClient.invalidateQueries({ queryKey: ["banner"] });
       resetForm();
+      setIsModalOpen(false);
     },
     onError: (error) => {
-      // message.error("Gagal membuat produk");
       setError(error.error || {});
     },
   });
+
   const onSubmit = (e) => {
     e.preventDefault();
     const formData = new FormData();
@@ -164,7 +172,7 @@ export default function Banner() {
     for (const img of images) {
       formData.append("images", img);
     }
-    mutate(formData);
+    mutate({ formData, accessToken: session?.accessToken });
   };
 
   return (
@@ -202,23 +210,26 @@ export default function Banner() {
               onChange={(val) => handleSelectChange("published", val)}
             />
           </Form.Item>
-          <Form.Item label="Upload Images">
-            <ImgCrop destroyOnHidden={true}>
-              <Upload
-                listType="picture-card"
-                fileList={fileList}
-                onPreview={handlePreview}
-                onChange={handleUploadChange}
-                beforeUpload={beforeUpload}
-              >
-                {fileList.length === 1 ? null : (
-                  <div>
-                    <PlusOutlined />
-                    <div style={{ marginTop: 8 }}>Upload</div>
-                  </div>
-                )}
-              </Upload>
-            </ImgCrop>
+          <Form.Item
+            label="Upload Images"
+            validateStatus={getFieldError("image", error) && "error"}
+            help={getMessageError("image", error)}
+          >
+            <Upload
+              listType="picture-card"
+              fileList={fileList}
+              onPreview={handlePreview}
+              onChange={handleUploadChange}
+              beforeUpload={beforeUpload}
+              className={getFieldError("image", error) && "border-red-500"}
+            >
+              {fileList.length === 1 ? null : (
+                <div>
+                  <PlusOutlined />
+                  <div style={{ marginTop: 8 }}>Upload</div>
+                </div>
+              )}
+            </Upload>
             <Modal
               destroyOnHidden={true}
               open={previewOpen}
@@ -232,27 +243,26 @@ export default function Banner() {
         </Form>
       </Modal>
       <div>
-        {isLoading ? (
-          <Spin tip="Loading..." />
-        ) : (
-          <>
-            <Table
-              columns={columns}
-              dataSource={data || []}
-              loading={isLoading}
-              rowKey="id"
-              pagination={{
-                position: ["bottomCenter"],
-                pageSize: 10,
-              }}
-              onRow={() => {
-                return {
-                  className: "hover:bg-gray-100 text-sm lowercase",
-                };
-              }}
-            />
-          </>
-        )}
+        <Table
+          columns={columns}
+          dataSource={data || []}
+          loading={isLoading}
+          rowKey="id"
+          pagination={{
+            showSizeChanger: true,
+            pageSizeOptions: ["5", "10", "20"],
+            position: ["bottomCenter"],
+            pageSize: perPage,
+            onChange: (newPage, newPageSize) => {
+              setPerPage(newPageSize);
+            },
+          }}
+          onRow={() => {
+            return {
+              className: "hover:bg-gray-100 text-sm lowercase",
+            };
+          }}
+        />
       </div>
     </div>
   );

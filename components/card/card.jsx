@@ -11,25 +11,24 @@ export default function Card({
   url,
 }) {
   return (
-    <div className="group relative mb-8 flex flex-col shadow-lg border border-gray-200 rounded-lg overflow-hidden">
+    <div className="my-8 rounded shadow-lg bg-blue-400 duration-300 hover:-translate-y-1">
       <Image
         src={src}
         alt={name}
         width={300}
         height={300}
         loading="lazy"
-        className="w-full h-40 object-cover object-center transition duration-500 group-hover:scale-105"
+        className="rounded h-72 w-full object-cover"
       />
-      <div className="bg-white">
-        <div className="flex-1 mt-4 px-4">
-          <Link href={url} className="uppercase text-sm text-gray-700 block">
-            <span>{name}</span>
-          </Link>
-        </div>
-        <div className="flex justify-between py-2 lowercase px-4 text-xs text-gray-500 font-medium">
-          <p>{Categorie?.name}</p>
-          {brandId && <p>brand : {Brand?.name}</p>}
-        </div>
+
+      <div className="flex-1 mt-4 px-4">
+        <Link href={url} className="uppercase text-sm text-gray-700 block">
+          <span>{name}</span>
+        </Link>
+      </div>
+      <div className="flex justify-between py-2 lowercase px-4 text-xs text-gray-500 font-medium">
+        <p className="bold">{Categorie?.name}</p>
+        {brandId && <p>brand : {Brand?.name}</p>}
       </div>
     </div>
   );

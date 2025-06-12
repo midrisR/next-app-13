@@ -5,13 +5,13 @@ import { PlusOutlined } from "@ant-design/icons";
 import { getFieldError, getMessageError } from "@/components/form/error";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import ImgCrop from "antd-img-crop";
-import { updateCategorie, getCategoriesById } from "@/lib/api";
+import { updateBanner, getBannerById } from "@/lib/api";
 import { useSession } from "next-auth/react";
 const { TextArea } = Input;
 
-export default function Update({ id }) {
+export default function Update({ id, accessToken }) {
   const queryClient = useQueryClient();
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const [form, setForm] = useState({
     name: "",
     published: true,
@@ -24,20 +24,19 @@ export default function Update({ id }) {
   const [error, setError] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const categoryById = useMutation({
-    mutationFn: getCategoriesById,
+  const bannerById = useMutation({
+    mutationFn: getBannerById,
     onSuccess: (res) => {
       setForm({
         name: res.name,
         published: res.published,
       });
-
       setFileList([
         {
           uid: res.id?.toString() || `img-${id}`,
           name: res.name || `image-${id}`,
           status: "done",
-          url: `http://localhost:5000/images/categories/${id}/${res.image}`,
+          url: `http://localhost:5000/images/banner/${id}/${res.image}`,
         },
       ]);
     },
@@ -48,7 +47,7 @@ export default function Update({ id }) {
 
   const showModal = () => {
     setIsModalOpen((prev) => !prev);
-    categoryById.mutate(id);
+    bannerById.mutate(id);
   };
   const closeModal = () => {
     setIsModalOpen(false);
@@ -97,31 +96,16 @@ export default function Update({ id }) {
     setError({});
   };
 
-  const upCat = async (formData) => {
-    const res = await fetch(`http://localhost:5000/api/categorie/${id}`, {
-      method: "PUT",
-      body: formData,
-      headers: {
-        Authorization: session?.accessToken,
-      },
-    });
-
-    const result = await res.json();
-    if (!result.success) {
-      throw result; // akan ditangkap di onError
-    }
-    return result;
-  };
-
   const { mutate, isPending } = useMutation({
-    mutationFn: upCat,
+    mutationFn: updateBanner,
     onSuccess: () => {
-      message.success("Categorie update is success");
-      queryClient.invalidateQueries({ queryKey: ["categorie"] });
+      message.success("banner update is success");
+      queryClient.invalidateQueries({ queryKey: ["banner"] });
+      setIsModalOpen(false);
       resetForm();
     },
     onError: (error) => {
-      message.error("Categorie update is error");
+      message.error("banner update is error");
       setError(error.error || {});
     },
   });
@@ -134,7 +118,7 @@ export default function Update({ id }) {
     for (const img of images) {
       formData.append("images", img);
     }
-    mutate(formData);
+    mutate({ formData, id, accessToken });
   };
 
   return (
@@ -165,7 +149,6 @@ export default function Update({ id }) {
           >
             <Select
               style={{ width: 200 }}
-              showSearch
               allowClear
               value={form.published}
               placeholder="is publish?"
@@ -178,22 +161,22 @@ export default function Update({ id }) {
           </Form.Item>
 
           <Form.Item label="Upload Images">
-            <ImgCrop>
-              <Upload
-                listType="picture-card"
-                fileList={fileList}
-                onPreview={handlePreview}
-                onChange={handleUploadChange}
-                beforeUpload={beforeUpload}
-              >
-                {fileList.length >= 2 ? null : (
-                  <div>
-                    <PlusOutlined />
-                    <div style={{ marginTop: 8 }}>Upload</div>
-                  </div>
-                )}
-              </Upload>
-            </ImgCrop>
+            <Upload
+              listType="picture-card"
+              fileList={fileList}
+              onPreview={handlePreview}
+              onChange={handleUploadChange}
+              beforeUpload={beforeUpload}
+              // onRemove={(d) => handelRemoveImage(d.uid)}
+            >
+              {fileList.length >= 2 ? null : (
+                <div>
+                  <PlusOutlined />
+                  <div style={{ marginTop: 8 }}>Upload</div>
+                </div>
+              )}
+            </Upload>
+
             <Modal
               open={previewOpen}
               title="Preview"

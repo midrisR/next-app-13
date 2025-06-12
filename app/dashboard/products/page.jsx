@@ -2,8 +2,13 @@
 import { useState, useEffect } from "react";
 import { Table, Input, message, Button, Flex } from "antd";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getProducts } from "@/lib/getProduct";
-import { deleteProduct, getBrands, getCategories } from "@/lib/api";
+
+import {
+  deleteProduct,
+  getBrands,
+  getCategories,
+  getProducts,
+} from "@/lib/api";
 import ModalDelete from "@/components/modal/delete";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
