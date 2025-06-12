@@ -16,7 +16,8 @@ import { getFieldError, getMessageError } from "@/components/form/error";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { getBrands, deleteBrand, createBrand } from "@/lib/api";
 import ModalDelete from "@/components/modal/delete";
-export default function Banner() {
+import Update from "./components/update";
+export default function Brand() {
   const { data: session } = useSession();
   const queryClient = useQueryClient();
   const [error, setError] = useState({});
@@ -39,6 +40,7 @@ export default function Banner() {
       message.success("brand berhasil dihapus");
       queryClient.invalidateQueries({ queryKey: ["brand"] });
       setIsModalOpen(false);
+      resetForm();
     },
     onError: (error) => {
       console.log(error.message);
@@ -75,8 +77,7 @@ export default function Banner() {
               })
             }
           />
-          <p>{record.id}</p>
-          {/* <Update id={record.id} accessToken={session?.accessToken} /> */}
+          <Update id={record.id} accessToken={session?.accessToken} />
         </Flex>
       ),
     },
@@ -112,7 +113,7 @@ export default function Banner() {
     mutationFn: createBrand,
     onSuccess: () => {
       message.success("Brand berhasil dibuat");
-      queryClient.invalidateQueries({ queryKey: ["Brand"] });
+      queryClient.invalidateQueries({ queryKey: ["brand"] });
       resetForm();
       setIsModalOpen(false);
     },

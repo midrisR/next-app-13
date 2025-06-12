@@ -25,7 +25,7 @@ export default function Create({ accessToken }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form, setForm] = useState({
     name: "",
-    published: "",
+    published: true,
   });
 
   const handleChange = (e) => {
@@ -157,8 +157,8 @@ export default function Create({ accessToken }) {
             />
           </Form.Item>
           <Form.Item label="Upload Images">
-            <ImgCrop  destroyOnHidden={true}>
-              <Upload 
+            <ImgCrop destroyOnHidden={true}>
+              <Upload
                 listType="picture-card"
                 fileList={fileList}
                 onPreview={handlePreview}
@@ -173,7 +173,8 @@ export default function Create({ accessToken }) {
                 )}
               </Upload>
             </ImgCrop>
-            <Modal  destroyOnHidden={true}
+            <Modal
+              destroyOnHidden={true}
               open={previewOpen}
               title="Preview"
               footer={null}

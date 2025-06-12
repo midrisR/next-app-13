@@ -119,6 +119,7 @@ export default function Update({ id }) {
       message.success("Categorie update is success");
       queryClient.invalidateQueries({ queryKey: ["categorie"] });
       resetForm();
+      setIsModalOpen(false);
     },
     onError: (error) => {
       message.error("Categorie update is error");

@@ -6,6 +6,8 @@ import items from "./items";
 
 export default function DashboardLayout({ children }) {
   const [collapsed, setCollapsed] = useState(false);
+  const [key, setKey] = useState(["1"]);
+
   return (
     <Layout style={{ minHeight: "100vh" }} theme="light">
       <Sider
@@ -15,11 +17,15 @@ export default function DashboardLayout({ children }) {
         onCollapse={(value) => setCollapsed(value)}
       >
         <div className="min-h-8 rounded m-4 bg-gray-100 p-4">DASHBOARD</div>
+
         <Menu
-          selectedKeys={["1", "11"]}
-          openKeys={["1"]}
+          selectedKeys={key}
+          // openKeys={["1"]}
           mode="inline"
           items={items}
+          onSelect={({ key, keyPath, selectedKeys, domEvent }) =>
+            setKey(selectedKeys)
+          }
         />
       </Sider>
       <Layout style={{ background: "#f4f6f9" }}>
