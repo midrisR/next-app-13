@@ -17,6 +17,7 @@ import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { getBrands, getCategories, createProduct } from "@/lib/api";
 import ImgCrop from "antd-img-crop";
+import Markdown from "@/components/markdown";
 const { TextArea } = Input;
 const { Title } = Typography;
 export default function Create({ categories, brands, accessToken }) {
@@ -31,6 +32,10 @@ export default function Create({ categories, brands, accessToken }) {
     brandId: "",
     published: "",
   });
+  const handleEditorChange = ({ html, text }) => {
+    console.log(html);
+    setForm((prev) => ({ ...prev, description: text }));
+  };
   const [images, setImages] = useState([]);
   const [fileList, setFileList] = useState([]);
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -174,7 +179,6 @@ export default function Create({ categories, brands, accessToken }) {
           >
             <Select
               style={{ width: 200 }}
-              showSearch
               allowClear
               value={form.published || undefined}
               placeholder="is publish?"
@@ -262,13 +266,19 @@ export default function Create({ categories, brands, accessToken }) {
             validateStatus={getFieldError("description", error) && "error"}
             help={getMessageError("description", error)}
           >
-            <TextArea
+            {/* <TextArea
               name="description"
               value={form.description}
               onChange={handleChange}
               placeholder="Enter description"
+            /> */}
+            <Markdown
+              value={form.description}
+              handleEditorChange={handleEditorChange}
+              name="description"
             />
           </Form.Item>
+
           <Form.Item>
             <Button block htmlType="submit" type="primary">
               Create
