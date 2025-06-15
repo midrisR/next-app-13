@@ -33,7 +33,6 @@ export default function Create({ categories, brands, accessToken }) {
     published: "",
   });
   const handleEditorChange = ({ html, text }) => {
-    console.log(html);
     setForm((prev) => ({ ...prev, description: text }));
   };
   const [images, setImages] = useState([]);
@@ -266,12 +265,6 @@ export default function Create({ categories, brands, accessToken }) {
             validateStatus={getFieldError("description", error) && "error"}
             help={getMessageError("description", error)}
           >
-            {/* <TextArea
-              name="description"
-              value={form.description}
-              onChange={handleChange}
-              placeholder="Enter description"
-            /> */}
             <Markdown
               value={form.description}
               handleEditorChange={handleEditorChange}

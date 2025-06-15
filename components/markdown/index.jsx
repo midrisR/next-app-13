@@ -1,16 +1,31 @@
 "use client";
 import dynamic from "next/dynamic";
-import "react-markdown-editor-lite/lib/index.css";
 import RenderMd from "./Md";
+import { plugins } from "./plugins";
+import "react-markdown-editor-lite/lib/index.css";
 
-const MdEditor = dynamic(() => import("react-markdown-editor-lite"), {
-  ssr: false,
-});
+const MdEditor = dynamic(
+  () => {
+    return new Promise((resolve) => {
+      Promise.all([
+        import("react-markdown-editor-lite"),
+        import("./undeLinePlugins"),
+      ]).then((res) => {
+        res[0].default.use(res[1].default);
+        resolve(res[0].default);
+      });
+    });
+  },
+  {
+    ssr: false,
+  }
+);
 
 function Markdown({ value, handleEditorChange, name }) {
   return (
     <div>
       <MdEditor
+        markdownClass="!border !border-red-400 !bg-blue-200"
         config={{
           view: {
             menu: true,
@@ -25,15 +40,14 @@ function Markdown({ value, handleEditorChange, name }) {
           },
           syncScrollMode: ["leftFollowRight", "rightFollowLeft"],
         }}
+        plugins={plugins}
         imageAccept=".jpg,.png"
-        className="w-full border border-red-800"
         name={name}
         value={value}
-        style={{ height: "500px" }}
+        style={{ height: "200px" }}
         renderHTML={(text) => <RenderMd markdown={text} />}
         onChange={handleEditorChange}
       />
-      {/* <HandleError error={mdError} field="content" /> */}
     </div>
   );
 }
