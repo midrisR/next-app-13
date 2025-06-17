@@ -11,14 +11,14 @@ export default function Card({
   url,
 }) {
   return (
-    <div className="my-8 rounded shadow-lg bg-blue-400 duration-300 hover:-translate-y-1">
+    <div className="my-8 rounded shadow-lg bg-slate-100 duration-300 hover:-translate-y-1">
       <Image
         src={src}
         alt={name}
-        width={300}
-        height={300}
+        width={200}
+        height={200}
         loading="lazy"
-        className="rounded h-72 w-full object-cover"
+        className="rounded w-full object-cover"
       />
 
       <div className="flex-1 mt-4 px-4">

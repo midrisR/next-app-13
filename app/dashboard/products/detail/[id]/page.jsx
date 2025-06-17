@@ -195,7 +195,7 @@ export default function Update({ params }) {
   return (
     <div className="bg-white rounded p-8">
       <Title>Add new product</Title>
-      <div className="w-1/2">
+      <div className="w-full">
         <Form layout="vertical" preserve={false} onFinish={onSubmit}>
           <Form.Item
             label="Name"

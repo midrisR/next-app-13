@@ -25,7 +25,7 @@ function Markdown({ value, handleEditorChange, name }) {
   return (
     <div>
       <MdEditor
-        markdownClass="!border !border-red-400 !bg-blue-200"
+        markdownClass="!border !border-red-400 "
         config={{
           view: {
             menu: true,

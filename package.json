@@ -39,5 +39,8 @@
     "swr": "^2.2.0",
     "tailwindcss": "3.3.2",
     "use-debounce": "^10.0.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/typography": "^0.5.16"
   }
 }
