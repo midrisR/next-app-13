@@ -43,7 +43,7 @@ export default function Update({ params }) {
   const [error, setError] = useState({});
 
   const handelRemoveImage = async (imgId) => {
-    const remove = await fetch(`http://localhost:5000/api/image/${imgId}`, {
+    const remove = await fetch(`https://api.projectme.my.id/image/${imgId}`, {
       method: "DELETE",
       headers: {
         Authorization: session?.accessToken,
@@ -95,7 +95,7 @@ export default function Update({ params }) {
         uid: img.id?.toString() || `img-${index}`,
         name: img.name || `image-${index}`,
         status: "done",
-        url: `http://localhost:5000/images/item/${id}/${img.name}`,
+        url: `https://api.projectme.my.id/images/item/${id}/${img.name}`,
       }));
       setFileList(initialFileList);
     }
@@ -150,7 +150,7 @@ export default function Update({ params }) {
   };
 
   const updateProduct = async (formData) => {
-    const res = await fetch(`http://localhost:5000/api/product/${id}`, {
+    const res = await fetch(`https://api.projectme.my.id/api/product/${id}`, {
       method: "PUT",
       body: formData,
       headers: {

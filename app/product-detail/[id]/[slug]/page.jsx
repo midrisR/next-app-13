@@ -1,4 +1,4 @@
-import { getProductsById } from "@/lib/getProduct";
+import { getProductsById } from "@/lib/api";
 import Markdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import ImageSlider from "@/components/image/ImageSlider";

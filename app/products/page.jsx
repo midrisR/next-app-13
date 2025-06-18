@@ -1,5 +1,5 @@
 import Pagination from "@/components/Pagination";
-import { getProducts } from "@/lib/getProduct";
+import { getProducts } from "@/lib/api";
 import Card from "@/components/card/card";
 import LayoutWithSidebar from "@/components/LayoutWithSidebar";
 import Header from "@/components/header";
@@ -28,7 +28,7 @@ export default async function Products({ searchParams }) {
                     id={id}
                     name={name}
                     url={`/product-detail/${id}/${name}`}
-                    src={`http://localhost:5000/images/item/${id}/${Images?.[0].name}`}
+                    src={`https://api.projectme.my.id/images/item/${id}/${Images?.[0].name}`}
                     Categorie={Categorie}
                     brandId={brandId}
                     Brand={Brand}

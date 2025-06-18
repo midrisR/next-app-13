@@ -19,7 +19,7 @@ export default function ImageSlider({ images, id, alt }) {
         <SwiperSlide key={i}>
           <Image
             className="h-96 overflow-hidden"
-            src={`http://localhost:5000/images/item/${id}/${src.name}`}
+            src={`https://api.projectme.my.id/images/item/${id}/${src.name}`}
             alt={alt}
             width={500}
             height={500}

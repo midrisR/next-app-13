@@ -11,7 +11,6 @@ const UnderlinePlugin = (props) => {
     // Jika tidak ada seleksi, beri placeholder agar bisa edit
     const content = selection.text || "";
     const wrapped = `${openTag}${content}${closeTag}`;
-    console.log(closeTag.length);
 
     editor.insertText(
       wrapped,
