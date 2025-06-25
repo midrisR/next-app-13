@@ -33,7 +33,7 @@ export const GlobalProvider = ({ children }) => {
     token,
   }) {
     const data = await fetch(
-      `http://localhost:5000/api/product?categories=${categories}&brands=${brands}&page=${page}&perPage=${perPage}`,
+      `http://localhost:5000/apiproduct?categories=${categories}&brands=${brands}&page=${page}&perPage=${perPage}`,
       {
         headers: {
           Authorization: session?.accessToken,
@@ -48,7 +48,7 @@ export const GlobalProvider = ({ children }) => {
   }
 
   async function getProductById(param) {
-    const res = await fetch(`http://localhost:5000/api/product/${param}`, {
+    const res = await fetch(`http://localhost:5000/apiproduct/${param}`, {
       headers: {
         Authorization: session?.accessToken,
       },
@@ -61,7 +61,7 @@ export const GlobalProvider = ({ children }) => {
   }
 
   async function getCategorie() {
-    const res = await fetch(`http://localhost:5000/api/categorie`, {
+    const res = await fetch(`http://localhost:5000/apicategorie`, {
       headers: {
         Authorization: session?.accessToken,
       },
@@ -74,7 +74,7 @@ export const GlobalProvider = ({ children }) => {
   }
 
   async function getBrand() {
-    const res = await fetch(`http://localhost:5000/api/brand`, {
+    const res = await fetch(`http://localhost:5000/apibrand`, {
       headers: {
         Authorization: session?.accessToken,
       },
@@ -87,7 +87,7 @@ export const GlobalProvider = ({ children }) => {
   }
 
   async function deleteProduct(id, token) {
-    await fetch(`http://localhost:5000/api/product/${id}`, {
+    await fetch(`http://localhost:5000/apiproduct/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: token,
@@ -95,7 +95,7 @@ export const GlobalProvider = ({ children }) => {
     });
   }
   async function deleteImage(id, token) {
-    const res = await fetch(`http://localhost:5000/api/image/${id}`, {
+    const res = await fetch(`http://localhost:5000/apiimage/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: token,
@@ -106,7 +106,7 @@ export const GlobalProvider = ({ children }) => {
   }
 
   async function deleteCategorie(id) {
-    await fetch(`http://localhost:5000/api/categorie/${id}`, {
+    await fetch(`http://localhost:5000/apicategorie/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: session?.accessToken,

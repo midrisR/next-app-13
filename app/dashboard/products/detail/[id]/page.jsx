@@ -18,6 +18,8 @@ import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import ImgCrop from "antd-img-crop";
 import { getProductById, getBrands, getCategories } from "@/lib/api";
 import { useSession } from "next-auth/react";
+import Markdown from "@/components/markdown";
+
 const { TextArea } = Input;
 const { Title } = Typography;
 export default function Update({ params }) {
@@ -43,7 +45,7 @@ export default function Update({ params }) {
   const [error, setError] = useState({});
 
   const handelRemoveImage = async (imgId) => {
-    const remove = await fetch(`https://api.projectme.my.id/image/${imgId}`, {
+    const remove = await fetch(`http://localhost:5000/api/image/${imgId}`, {
       method: "DELETE",
       headers: {
         Authorization: session?.accessToken,
@@ -95,7 +97,7 @@ export default function Update({ params }) {
         uid: img.id?.toString() || `img-${index}`,
         name: img.name || `image-${index}`,
         status: "done",
-        url: `https://api.projectme.my.id/images/item/${id}/${img.name}`,
+        url: `http://localhost:5000/images/item/${id}/${img.name}`,
       }));
       setFileList(initialFileList);
     }
@@ -104,6 +106,10 @@ export default function Update({ params }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleEditorChange = ({ html, text }) => {
+    setForm((prev) => ({ ...prev, description: text }));
   };
 
   const handleSelectChange = (field, value) => {
@@ -150,7 +156,7 @@ export default function Update({ params }) {
   };
 
   const updateProduct = async (formData) => {
-    const res = await fetch(`https://api.projectme.my.id/api/product/${id}`, {
+    const res = await fetch(`http://localhost:5000/api/api/product/${id}`, {
       method: "PUT",
       body: formData,
       headers: {
@@ -326,11 +332,10 @@ export default function Update({ params }) {
             validateStatus={getFieldError("description", error) && "error"}
             help={getMessageError("description", error)}
           >
-            <TextArea
-              name="description"
+            <Markdown
               value={form.description}
-              onChange={handleChange}
-              placeholder="Enter description"
+              handleEditorChange={handleEditorChange}
+              name="description"
             />
           </Form.Item>
           <Form.Item>

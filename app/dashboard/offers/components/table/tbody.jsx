@@ -25,7 +25,7 @@ export default function tbody({ data, accessToken, vendors }) {
       price: priceRef.current.value,
       date: dateRef.current.value,
     };
-    const res = await fetch(`http://localhost:5000/api/offers/${id}`, {
+    const res = await fetch(`http://localhost:5000/apioffers/${id}`, {
       method: "PUT",
       body: JSON.stringify(value),
       headers: {
@@ -48,7 +48,7 @@ export default function tbody({ data, accessToken, vendors }) {
     return result;
   };
   const deleteOffers = async (id) => {
-    await fetch(`http://localhost:5000/api/offers/${id}`, {
+    await fetch(`http://localhost:5000/apioffers/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: accessToken,
@@ -74,7 +74,6 @@ export default function tbody({ data, accessToken, vendors }) {
             {/* {format(new Date(val.date), "dd MMMM yyyy")} */}
             {val.date}
           </td>
-
 
           <td className="whitespace-nowrap flex gap-1 px-4 py-2">
             <Modal

@@ -92,7 +92,7 @@ export default function Create({ categories, brands, accessToken }) {
   };
 
   const createProduct = async (formData) => {
-    const res = await fetch("http://localhost:5000/api/product", {
+    const res = await fetch("http://localhost:5000/apiproduct", {
       method: "POST",
       body: formData,
       headers: {

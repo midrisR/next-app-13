@@ -2,24 +2,18 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default function Card({
-  id,
   name,
   src,
   Categorie,
   brandId,
   Brand,
   url,
+  width,
+  height,
 }) {
   return (
-    <div className="my-8 rounded shadow-lg bg-slate-100 duration-300 hover:-translate-y-1">
-      <Image
-        src={src}
-        alt={name}
-        width={200}
-        height={200}
-        loading="lazy"
-        className="rounded w-full object-cover"
-      />
+    <div className="my-8 rounded shadow-lg bg-white duration-300 hover:-translate-y-1">
+      <img src={src} alt={name} className="rounded w-full object-cover" />
 
       <div className="flex-1 mt-4 px-4">
         <Link href={url} className="uppercase text-sm text-gray-700 block">

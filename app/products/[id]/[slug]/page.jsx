@@ -28,7 +28,7 @@ export default async function Page({ params, searchParams }) {
                     id={id}
                     name={name}
                     url={`/product-detail/${id}/${name}`}
-                    src={`https://api.projectme.my.id/images/item/${id}/${Images?.[0].name}`}
+                    src={`http://localhost:5000/images/item/${id}/${Images?.[0].name}`}
                     Categorie={Categorie}
                     brandId={brandId}
                     Brand={Brand}

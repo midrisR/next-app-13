@@ -53,7 +53,7 @@ export default function Create({
       formData.append("images", img[key]);
     }
 
-    const res = await fetch(`http://localhost:5000/api/product/${productId}`, {
+    const res = await fetch(`http://localhost:5000/apiproduct/${productId}`, {
       method: "PUT",
       body: formData,
       headers: {
@@ -70,7 +70,7 @@ export default function Create({
     }
   };
   const removeImg = async (id) => {
-    const remove = await fetch(`http://localhost:5000/api/image/${id}`, {
+    const remove = await fetch(`http://localhost:5000/apiimage/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: accessToken,

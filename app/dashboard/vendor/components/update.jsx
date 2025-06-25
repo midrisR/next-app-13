@@ -3,9 +3,9 @@ import { useState } from "react";
 import { Button, Modal, Input, Form, message } from "antd";
 import { getFieldError, getMessageError } from "@/components/form/error";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createVendor } from "@/lib/api";
+import { getVendorById, updateVendor } from "@/lib/api";
 
-export default function Create({ accessToken }) {
+export default function Update({ id, accessToken }) {
   const queryClient = useQueryClient();
   const [error, setError] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -15,18 +15,34 @@ export default function Create({ accessToken }) {
     email: "",
     address: "",
   });
+
+  const brandById = useMutation({
+    mutationFn: getVendorById,
+    onSuccess: (res) => {
+      setForm({
+        name: res.name,
+        contact: res.contact,
+        email: res.email,
+        address: res.address,
+      });
+    },
+    onError: (err) => {
+      console.error("Failed to fetch vendor", err);
+    },
+  });
+
   const showModal = () => {
-    setIsModalOpen(true);
+    setIsModalOpen((prev) => !prev);
+    brandById.mutate(id);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleCancel = () => {
-    resetForm();
-    setIsModalOpen(false);
   };
 
   const resetForm = () => {
@@ -39,30 +55,31 @@ export default function Create({ accessToken }) {
     setError({});
   };
 
-  const { mutate } = useMutation({
-    mutationFn: createVendor,
+  const { mutate, isPending } = useMutation({
+    mutationFn: updateVendor,
     onSuccess: () => {
-      message.success("Vendor berhasil dibuat");
+      message.success("Vendor update is success");
       queryClient.invalidateQueries({ queryKey: ["vendor"] });
-      resetForm();
       setIsModalOpen(false);
+      resetForm();
     },
     onError: (error) => {
+      message.error("Vendor update is error");
       setError(error.error || {});
     },
   });
 
-  const onSubmit = (e) => {
-    e.preventDefault();
-    mutate({ form, accessToken: accessToken });
+  const onSubmit = () => {
+    mutate({ id, form, accessToken });
   };
 
   return (
-    <div className="mb-3">
-      <Button type="primary" onClick={showModal}>
-        Create vendor
+    <>
+      <Button size="small" type="primary" onClick={showModal}>
+        update
       </Button>
-      <Modal onOk={onSubmit} open={isModalOpen} onCancel={handleCancel}>
+
+      <Modal open={isModalOpen} onOk={onSubmit} onCancel={closeModal}>
         <Form layout="vertical" preserve={false}>
           <Form.Item
             label="Name"
@@ -114,6 +131,6 @@ export default function Create({ accessToken }) {
           </Form.Item>
         </Form>
       </Modal>
-    </div>
+    </>
   );
 }

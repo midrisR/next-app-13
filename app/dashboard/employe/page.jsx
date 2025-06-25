@@ -3,7 +3,7 @@ import { useState } from "react";
 import { message, Table, Flex } from "antd";
 import { useSession } from "next-auth/react";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
-import { getClient, deleteClient } from "@/lib/api";
+import { getEmploye, deleteEmploye } from "@/lib/api";
 import ModalDelete from "@/components/modal/delete";
 import Update from "./components/update";
 import Create from "./components/create";
@@ -13,16 +13,16 @@ export default function Brand() {
   const [perPage, setPerPage] = useState(10);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["client"], // tambahkan ke queryKey
-    queryFn: getClient,
+    queryKey: ["employe"], // tambahkan ke queryKey
+    queryFn: getEmploye,
     keepPreviousData: true,
   });
 
   const { mutate: removeBanner } = useMutation({
-    mutationFn: ({ id, accessToken }) => deleteClient({ id, accessToken }),
+    mutationFn: ({ id, accessToken }) => deleteEmploye({ id, accessToken }),
     onSuccess: () => {
-      message.success("client berhasil dihapus");
-      queryClient.invalidateQueries({ queryKey: ["client"] });
+      message.success("employe berhasil dihapus");
+      queryClient.invalidateQueries({ queryKey: ["employe"] });
       setIsModalOpen(false);
     },
     onError: (error) => {
@@ -37,9 +37,9 @@ export default function Brand() {
       key: "name",
     },
     {
-      title: "Contact",
-      dataIndex: "contact",
-      key: "contact",
+      title: "Phone",
+      dataIndex: "phone",
+      key: "phone",
     },
     {
       title: "Email",
@@ -47,9 +47,9 @@ export default function Brand() {
       key: "email",
     },
     {
-      title: "Address",
-      dataIndex: "address",
-      key: "address",
+      title: "Role",
+      dataIndex: "role",
+      key: "role",
     },
     {
       title: "Action",
@@ -69,7 +69,6 @@ export default function Brand() {
       ),
     },
   ];
-
   return (
     <div className="bg-white rounded p-8">
       <Create accessToken={session?.accessToken} />

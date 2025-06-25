@@ -1,95 +1,118 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Input from "@/components/form/input";
-import Modal from "@/components/modal/modal";
-const initialState = {
-  address: "",
-  contact: "",
-  email: "",
-  name: "",
-};
+import { Button, Modal, Input, Form, message } from "antd";
+import { getFieldError, getMessageError } from "@/components/form/error";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createClient } from "@/lib/api";
 
 export default function Create({ accessToken }) {
-  const [value, setValue] = useState(initialState);
-  const [error, setError] = useState();
-
-  const router = useRouter();
-
-  const handleChange = (e) => {
-    setValue((state) => ({
-      ...state,
-      [e.target.name]: e.target.value,
-    }));
+  const queryClient = useQueryClient();
+  const [error, setError] = useState({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [form, setForm] = useState({
+    name: "",
+    contact: "",
+    email: "",
+    address: "",
+  });
+  const showModal = () => {
+    setIsModalOpen(true);
   };
 
-  const onSubmit = async (e) => {
-    e.preventDefault();
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
 
-    const res = await fetch(`http://localhost:5000/api/client`, {
-      method: "POST",
-      body: JSON.stringify(value),
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: accessToken,
-      },
+  const handleCancel = () => {
+    resetForm();
+    setIsModalOpen(false);
+  };
+
+  const resetForm = () => {
+    setForm({
+      name: "",
+      contact: "",
+      email: "",
+      address: "",
     });
+    setError({});
+  };
 
-    const result = await res.json();
+  const { mutate } = useMutation({
+    mutationFn: createClient,
+    onSuccess: () => {
+      message.success("Brand berhasil dibuat");
+      queryClient.invalidateQueries({ queryKey: ["client"] });
+      resetForm();
+      setIsModalOpen(false);
+    },
+    onError: (error) => {
+      setError(error.error || {});
+    },
+  });
 
-    if (!result.success) {
-      setError(result.error);
-    } else {
-      setError([]);
-      setValue(initialState);
-      router.refresh();
-    }
-    return result;
+  const onSubmit = (e) => {
+    e.preventDefault();
+    mutate({ form, accessToken: accessToken });
   };
 
   return (
-    <div className="my-4">
-      <Modal onSubmit={onSubmit} icon="create client" width="lg:w-2/6">
-        <Input
-          error={error}
-          label="Name"
-          name="name"
-          type="text"
-          value={value.name}
-          onChange={handleChange}
-        />
-        <Input
-          error={error}
-          label="Address"
-          name="address"
-          type="text"
-          value={value.address}
-          onChange={handleChange}
-        />
-        <Input
-          error={error}
-          label="Contact"
-          name="contact"
-          type="text"
-          value={value.contact}
-          onChange={handleChange}
-        />
-        <small className="italic">
-          *Note : jika kontak lebih dari satu maka inputkan data seperti
-          bertikut : telepon:123456, wa:123456, fax:123456. etc...
-        </small>
-        <Input
-          error={error}
-          label="Email"
-          name="email"
-          type="text"
-          value={value.email}
-          onChange={handleChange}
-        />
-        <small className="italic">
-          *Note : jika email lebih dari satu maka inputkan data seperti bertikut
-          : email : example@mail.com,email : example-1@mail.com. etc...
-        </small>
+    <div className="mb-3">
+      <Button type="primary" onClick={showModal}>
+        Create client
+      </Button>
+      <Modal onOk={onSubmit} open={isModalOpen} onCancel={handleCancel}>
+        <Form layout="vertical" preserve={false}>
+          <Form.Item
+            label="Name"
+            validateStatus={getFieldError("name", error) && "error"}
+            help={getMessageError("name", error)}
+          >
+            <Input
+              name="name"
+              value={form.name}
+              onChange={handleChange}
+              placeholder="Enter product name"
+            />
+          </Form.Item>
+          <Form.Item
+            label="Contact"
+            validateStatus={getFieldError("contact", error) && "error"}
+            help={getMessageError("contact", error)}
+          >
+            <Input
+              name="contact"
+              value={form.contact}
+              onChange={handleChange}
+              placeholder="Enter product name"
+            />
+          </Form.Item>
+          <Form.Item
+            label="Email"
+            validateStatus={getFieldError("email", error) && "error"}
+            help={getMessageError("email", error)}
+          >
+            <Input
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              placeholder="Enter product name"
+            />
+          </Form.Item>
+          <Form.Item
+            label="Address"
+            validateStatus={getFieldError("address", error) && "error"}
+            help={getMessageError("address", error)}
+          >
+            <Input
+              name="address"
+              value={form.address}
+              onChange={handleChange}
+              placeholder="Enter product name"
+            />
+          </Form.Item>
+        </Form>
       </Modal>
     </div>
   );

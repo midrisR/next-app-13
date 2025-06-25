@@ -81,7 +81,7 @@ export default function Create({ accessToken }) {
   };
 
   const cretaeCategorie = async (formData) => {
-    const res = await fetch("http://localhost:5000/api/categorie", {
+    const res = await fetch("http://localhost:5000/apicategorie", {
       method: "POST",
       body: formData,
       headers: {

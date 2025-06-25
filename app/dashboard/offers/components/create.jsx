@@ -18,7 +18,7 @@ export default function Create({ accessToken, vendors }) {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch(`http://localhost:5000/api/offers`, {
+    const res = await fetch(`http://localhost:5000/apioffers`, {
       method: "POST",
       body: JSON.stringify({
         product: productRef.current.value,

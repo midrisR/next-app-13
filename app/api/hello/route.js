@@ -5,7 +5,7 @@ export async function GET(request) {
   const perPage = searchParams.get("perPage");
 
   const data = await fetch(
-    `http://localhost:5000/api/product?page=${page}&perPage=${perPage}`
+    `http://localhost:5000/apiproduct?page=${page}&perPage=${perPage}`
   );
   const res = await data.json();
   return NextResponse.json(res);

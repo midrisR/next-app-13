@@ -4,6 +4,7 @@ import {
   TagsOutlined,
   UsergroupAddOutlined,
   PictureOutlined,
+  ShopOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
 const items = [
@@ -32,8 +33,18 @@ const items = [
   },
   {
     key: "5",
+    icon: <ShopOutlined />,
+    label: <Link href="/dashboard/vendor">Vendor</Link>,
+  },
+  {
+    key: "6",
     icon: <PictureOutlined />,
     label: <Link href="/dashboard/banner">Banner</Link>,
+  },
+  {
+    key: "7",
+    icon: <PictureOutlined />,
+    label: <Link href="/dashboard/employe">Employe</Link>,
   },
 ];
 

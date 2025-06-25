@@ -105,7 +105,6 @@ export default function Update({ id }) {
         Authorization: session?.accessToken,
       },
     });
-
     const result = await res.json();
     if (!result.success) {
       throw result; // akan ditangkap di onError
@@ -114,7 +113,7 @@ export default function Update({ id }) {
   };
 
   const { mutate, isPending } = useMutation({
-    mutationFn: upCat,
+    mutationFn: updateCategorie,
     onSuccess: () => {
       message.success("Categorie update is success");
       queryClient.invalidateQueries({ queryKey: ["categorie"] });
@@ -135,7 +134,7 @@ export default function Update({ id }) {
     for (const img of images) {
       formData.append("images", img);
     }
-    mutate(formData);
+    mutate({ formData, id, accessToken: session?.accessToken });
   };
 
   return (
