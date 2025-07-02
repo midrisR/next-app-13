@@ -1,10 +1,10 @@
 "use client";
 import { useState } from "react";
-import { Button, Modal, Input, Form, message, Select } from "antd";
+import { Button, Modal, Input, Form, message } from "antd";
 import { getFieldError, getMessageError } from "@/components/form/error";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createEmploye } from "@/lib/api";
-
+import { createQuestion } from "@/lib/api";
+const { TextArea } = Input;
 export default function Create({ accessToken }) {
   const queryClient = useQueryClient();
   const [error, setError] = useState({});
@@ -44,10 +44,10 @@ export default function Create({ accessToken }) {
   };
 
   const { mutate } = useMutation({
-    mutationFn: createEmploye,
+    mutationFn: createQuestion,
     onSuccess: () => {
-      message.success("employe berhasil dibuat");
-      queryClient.invalidateQueries({ queryKey: ["employe"] });
+      message.success("message berhasil dibuat");
+      queryClient.invalidateQueries({ queryKey: ["message"] });
       setIsModalOpen(false);
       resetForm();
     },
@@ -64,7 +64,7 @@ export default function Create({ accessToken }) {
   return (
     <div className="mb-3">
       <Button type="primary" onClick={showModal}>
-        Add employe
+        Add Message
       </Button>
       <Modal onOk={onSubmit} open={isModalOpen} onCancel={handleCancel}>
         <Form layout="vertical" preserve={false}>
@@ -105,21 +105,15 @@ export default function Create({ accessToken }) {
             />
           </Form.Item>
           <Form.Item
-            label="role"
-            validateStatus={getFieldError("role", error) && "error"}
-            help={getMessageError("role", error)}
+            label="message"
+            validateStatus={getFieldError("message", error) && "error"}
+            help={getMessageError("message", error)}
           >
-            <Select
-              style={{ width: 200 }}
-              allowClear
-              value={form.published}
-              placeholder="Select role"
-              options={[
-                { value: "marketing", label: "Marketing" },
-                { value: "Purchasing", label: "Purchasing" },
-                { value: "marketing manager", label: "Marketing Manager" },
-              ]}
-              onChange={(val) => handleSelectChange("role", val)}
+            <TextArea
+              name="message"
+              value={form.message}
+              onChange={handleChange}
+              placeholder="Enter question"
             />
           </Form.Item>
         </Form>

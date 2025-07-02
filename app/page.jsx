@@ -2,6 +2,7 @@ import dynamic from "next/dynamic";
 import Header from "@/components/header";
 import { getCategories, getBanner, getEmploye } from "@/lib/api";
 import Footer from "@/components/footer";
+import ChatButton from "@/components/message";
 
 const BannerSlider = dynamic(() => import("@/components/image/banner"), {
   ssr: false, // ⚠️ ini penting agar tidak error di server
@@ -33,6 +34,7 @@ export default async function Home() {
           ))}
         </div>
       </div>
+      <ChatButton />
       <Footer employes={employe} />
     </>
   );

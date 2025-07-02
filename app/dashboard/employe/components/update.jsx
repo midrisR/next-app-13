@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Button, Modal, Input, Form, Select, message } from "antd";
 import { getFieldError, getMessageError } from "@/components/form/error";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { getClientById, updateClient } from "@/lib/api";
+import { getEmployeById, updateEmploye } from "@/lib/api";
 
 export default function Update({ id, accessToken }) {
   const queryClient = useQueryClient();
@@ -17,13 +17,13 @@ export default function Update({ id, accessToken }) {
   });
 
   const brandById = useMutation({
-    mutationFn: getClientById,
+    mutationFn: getEmployeById,
     onSuccess: (res) => {
       setForm({
         name: res.name,
-        contact: res.contact,
+        role: res.role,
         email: res.email,
-        address: res.address,
+        phone: res.phone,
       });
     },
     onError: (err) => {
@@ -60,15 +60,15 @@ export default function Update({ id, accessToken }) {
   };
 
   const { mutate, isPending } = useMutation({
-    mutationFn: updateClient,
+    mutationFn: updateEmploye,
     onSuccess: () => {
-      message.success("Client update is success");
-      queryClient.invalidateQueries({ queryKey: ["client"] });
+      message.success("Employe update is success");
+      queryClient.invalidateQueries({ queryKey: ["employe"] });
       setIsModalOpen(false);
       resetForm();
     },
     onError: (error) => {
-      message.error("Client update is error");
+      message.error("Employe update is error");
       setError(error.error || {});
     },
   });
@@ -98,13 +98,13 @@ export default function Update({ id, accessToken }) {
             />
           </Form.Item>
           <Form.Item
-            label="Contact"
-            validateStatus={getFieldError("contact", error) && "error"}
-            help={getMessageError("contact", error)}
+            label="Phone"
+            validateStatus={getFieldError("phone", error) && "error"}
+            help={getMessageError("phone", error)}
           >
             <Input
-              name="contact"
-              value={form.contact}
+              name="phone"
+              value={form.phone}
               onChange={handleChange}
               placeholder="Enter product name"
             />
@@ -122,15 +122,21 @@ export default function Update({ id, accessToken }) {
             />
           </Form.Item>
           <Form.Item
-            label="Address"
-            validateStatus={getFieldError("address", error) && "error"}
-            help={getMessageError("address", error)}
+            label="role"
+            validateStatus={getFieldError("role", error) && "error"}
+            help={getMessageError("role", error)}
           >
-            <Input
-              name="address"
-              value={form.address}
-              onChange={handleChange}
-              placeholder="Enter product name"
+            <Select
+              style={{ width: 200 }}
+              allowClear
+              value={form.role}
+              placeholder="Select role"
+              options={[
+                { value: "marketing", label: "Marketing" },
+                { value: "Purchasing", label: "Purchasing" },
+                { value: "marketing manager", label: "Marketing Manager" },
+              ]}
+              onChange={(val) => handleSelectChange("role", val)}
             />
           </Form.Item>
         </Form>

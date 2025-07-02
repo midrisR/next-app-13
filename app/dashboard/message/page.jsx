@@ -3,7 +3,7 @@ import { useState } from "react";
 import { message, Table, Flex } from "antd";
 import { useSession } from "next-auth/react";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
-import { getEmploye, deleteEmploye } from "@/lib/api";
+import { getQuestion, deleteQuestion } from "@/lib/api";
 import ModalDelete from "@/components/modal/delete";
 import Update from "./components/update";
 import Create from "./components/create";
@@ -13,23 +13,31 @@ export default function Employe() {
   const [perPage, setPerPage] = useState(10);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["employe"], // tambahkan ke queryKey
-    queryFn: getEmploye,
+    queryKey: ["question"], // tambahkan ke queryKey
+    queryFn: getQuestion,
     keepPreviousData: true,
   });
 
-  const { mutate: removeBanner } = useMutation({
-    mutationFn: ({ id, accessToken }) => deleteEmploye({ id, accessToken }),
+  const { mutate: removeQuestion } = useMutation({
+    mutationFn: ({ id, accessToken }) => deleteQuestion({ id, accessToken }),
     onSuccess: () => {
-      message.success("employe berhasil dihapus");
-      queryClient.invalidateQueries({ queryKey: ["employe"] });
+      message.success("question berhasil dihapus");
+      queryClient.invalidateQueries({ queryKey: ["question"] });
       setIsModalOpen(false);
     },
     onError: (error) => {
       console.log(error.message);
     },
   });
-
+  const options = {
+    day: "numeric", //'2-digit' -> 02 , numeric 2
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false, // pakai 24 jam
+    timeZone: "Asia/Jakarta",
+  };
   const columns = [
     {
       title: "Name",
@@ -47,9 +55,15 @@ export default function Employe() {
       key: "email",
     },
     {
-      title: "Role",
-      dataIndex: "role",
-      key: "role",
+      title: "Date",
+      dataIndex: "createdAt",
+      key: "date",
+      render: (_, record) => {
+        const date = new Date(record.createdAt);
+        const formatted = date.toLocaleString("id-ID", options);
+        const finalFormatted = formatted.replace("pukul", ", jam");
+        return finalFormatted;
+      },
     },
     {
       title: "Action",
@@ -58,7 +72,7 @@ export default function Employe() {
         <Flex gap="small">
           <ModalDelete
             handleDelete={() =>
-              removeBanner({
+              removeQuestion({
                 id: record.id,
                 accessToken: session?.accessToken,
               })
@@ -71,7 +85,7 @@ export default function Employe() {
   ];
   return (
     <div className="bg-white rounded p-8">
-      <Create accessToken={session?.accessToken} />
+      {/* <Create accessToken={session?.accessToken} /> */}
       <Table
         columns={columns}
         dataSource={data || []}
