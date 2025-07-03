@@ -1,12 +1,12 @@
 "use client";
 import { useState } from "react";
-import { Button, Modal, Input, Form, message } from "antd";
+import { Button, Input, Form, message } from "antd";
 import { getFieldError, getMessageError } from "@/components/form/error";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createQuestion } from "@/lib/api";
 const { TextArea } = Input;
 import { useSession } from "next-auth/react";
-export default function Create() {
+export default function Create({ setIsOpen }) {
   const { data: session } = useSession();
   const queryClient = useQueryClient();
   const [error, setError] = useState({});
@@ -15,7 +15,7 @@ export default function Create() {
     name: "",
     phone: "",
     email: "",
-    role: "",
+    message: "",
   });
 
   const handleChange = (e) => {
@@ -28,7 +28,7 @@ export default function Create() {
       name: "",
       phone: "",
       email: "",
-      role: "",
+      message: "",
     });
     setError({});
   };
@@ -38,9 +38,12 @@ export default function Create() {
     onSuccess: () => {
       message.success("message berhasil dibuat");
       queryClient.invalidateQueries({ queryKey: ["message"] });
+      setIsOpen(false);
       resetForm();
     },
     onError: (error) => {
+      console.log(error);
+
       setError(error.error || {});
     },
   });
@@ -103,6 +106,11 @@ export default function Create() {
           onChange={handleChange}
           placeholder="Enter question"
         />
+      </Form.Item>
+      <Form.Item label={null}>
+        <Button type="primary" onClick={onSubmit}>
+          Submit
+        </Button>
       </Form.Item>
     </Form>
   );

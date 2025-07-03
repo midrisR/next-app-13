@@ -62,11 +62,11 @@ export default function Footer({ employes }) {
         <iframe
           src="https://www.google.com/maps/embed?pb=!1m13!1m8!1m3!1d3135.3629074984156!2d106.950576!3d-6.132979!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zNsKwMDcnNTguNyJTIDEwNsKwNTcnMDQuNCJF!5e1!3m2!1sid!2sid!4v1750747644844!5m2!1sid!2sid"
           style={{ border: 0 }}
-          allowfullscreen=""
+          allowFullScreen=""
           className="w-full"
           height={300}
           loading="lazy"
-          referrerpolicy="no-referrer-when-downgrade"
+          referrerPolicy="no-referrer-when-downgrade"
         ></iframe>
       </div>
     </footer>

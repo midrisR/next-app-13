@@ -19,7 +19,10 @@ export default async function Home() {
       <div className="py-10 px-12">
         <div className="grid grid-flow-row gap-8 text-neutral-600 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
           {categories.map(({ id, name, image }) => (
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div
+              key={id}
+              className="bg-white rounded-xl shadow-lg overflow-hidden"
+            >
               <img
                 key={id}
                 className=" w-full h-64 object-cover rounded"

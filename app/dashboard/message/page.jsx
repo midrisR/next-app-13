@@ -6,7 +6,7 @@ import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { getQuestion, deleteQuestion } from "@/lib/api";
 import ModalDelete from "@/components/modal/delete";
 import Update from "./components/update";
-import Create from "./components/create";
+
 export default function Employe() {
   const { data: session } = useSession();
   const queryClient = useQueryClient();
@@ -23,7 +23,6 @@ export default function Employe() {
     onSuccess: () => {
       message.success("question berhasil dihapus");
       queryClient.invalidateQueries({ queryKey: ["question"] });
-      setIsModalOpen(false);
     },
     onError: (error) => {
       console.log(error.message);
@@ -62,7 +61,7 @@ export default function Employe() {
         const date = new Date(record.createdAt);
         const formatted = date.toLocaleString("id-ID", options);
         const finalFormatted = formatted.replace("pukul", ", jam");
-        return finalFormatted;
+        return <p>{finalFormatted}</p>;
       },
     },
     {
@@ -85,7 +84,6 @@ export default function Employe() {
   ];
   return (
     <div className="bg-white rounded p-8">
-      {/* <Create accessToken={session?.accessToken} /> */}
       <Table
         columns={columns}
         dataSource={data || []}

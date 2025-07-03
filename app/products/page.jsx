@@ -1,8 +1,9 @@
+import Link from "next/link";
 import Pagination from "@/components/Pagination";
 import { getProducts } from "@/lib/api";
-import Card from "@/components/card/card";
 import LayoutWithSidebar from "@/components/LayoutWithSidebar";
 import Header from "@/components/header";
+import { Card } from "antd";
 export default async function Products({ searchParams }) {
   const { page, categories, brands } = await searchParams;
   const perPage = 21;
@@ -20,19 +21,33 @@ export default async function Products({ searchParams }) {
       <LayoutWithSidebar>
         <div className="overflow-x-auto">
           <div className="w-full flex flex-wrap justify-center">
-            <div className="w-full grid grid-cols-1 lg:grid-cols-4 gap-9">
+            <div className="w-full grid grid-cols-1 lg:grid-cols-5 gap-9">
               {products.map(
                 ({ id, name, Images, Categorie, brandId, Brand }) => (
                   <Card
-                    key={id}
-                    id={id}
-                    name={name}
-                    url={`/product-detail/${id}/${name}`}
-                    src={`http://localhost:5000/images/item/${id}/${Images?.[0].name}`}
-                    Categorie={Categorie}
-                    brandId={brandId}
-                    Brand={Brand}
-                  />
+                    className="bg-white"
+                    hoverable
+                    style={{ width: 240 }}
+                    cover={
+                      <img
+                        className="h-56 object-cover"
+                        alt={name}
+                        src={`http://localhost:5000/images/item/${id}/${Images?.[0].name}`}
+                      />
+                    }
+                  >
+                    <Link
+                      href={`/product-detail/${id}/${name}`}
+                      className="uppercase text-sm text-gray-700 block"
+                    >
+                      <span>{name}</span>
+                    </Link>
+
+                    <div className="flex content-end justify-between py-2 lowercase text-xs text-gray-500 font-medium">
+                      <p className="bold">{Categorie?.name}</p>
+                      {brandId && <p>brand : {Brand?.name}</p>}
+                    </div>
+                  </Card>
                 )
               )}
             </div>
