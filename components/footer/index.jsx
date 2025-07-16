@@ -1,20 +1,18 @@
 export default function Footer({ employes }) {
   return (
     <footer className="bg-stone-200 text-slate-700 px-6 py-12">
-      <div className="mx-auto">
-        <div className="md:col-span-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-          {employes.map((employe, i) => (
-            <div key={i}>
-              <h4 className="font-bold">{employe.name}</h4>
-              <p>{employe.role}</p>
-              <p>{employe.phone}</p>
-              <p className="break-all">{employe.email}</p>
-            </div>
-          ))}
-        </div>
+      <div className="md:col-span-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mt-4 mb-32">
+        {employes.map((employe, i) => (
+          <div key={i}>
+            <h4 className="font-bold">{employe.name}</h4>
+            <p>{employe.role}</p>
+            <p>{employe.phone}</p>
+            <p className="break-all">{employe.email}</p>
+          </div>
+        ))}
       </div>
 
-      <div className="max-w-7xl mx-auto mt-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 text-sm">
+      <div className="w-full mt-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 text-sm">
         <div>
           <h4 className="font-bold uppercase">CV. Gravindo Berkati Sukses</h4>
           <p>
@@ -26,7 +24,7 @@ export default function Footer({ employes }) {
           <p>Email: gravindoberkatisukses@gmail.com</p>
         </div>
 
-        <div className="flex flex-col items-start md:items-center">
+        <div className="flex flex-col items-start">
           <h4 className="font-bold uppercase mb-2">Follow Us</h4>
           <div className="flex space-x-4">
             <a href="#">

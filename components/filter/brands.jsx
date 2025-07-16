@@ -92,7 +92,7 @@ export default function FilterBrands({ brands, open }) {
 
   return (
     <>
-      <Disclosure.Button className="flex w-full items-center justify-between font-semibold text-sm bg-white py-3 text-black">
+      <Disclosure.Button className="flex w-full items-center justify-between font-semibold text-sm bg-white py-3 px-4 rounded text-black">
         Brands
         {open ? <HiChevronDown /> : <HiChevronUp />}
       </Disclosure.Button>

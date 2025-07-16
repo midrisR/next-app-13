@@ -19,50 +19,46 @@ export default async function Products({ searchParams }) {
     <>
       <Header />
       <LayoutWithSidebar>
-        <div className="overflow-x-auto">
-          <div className="w-full flex flex-wrap justify-center">
-            <div className="w-full grid grid-cols-1 lg:grid-cols-5 gap-9">
-              {products.map(
-                ({ id, name, Images, Categorie, brandId, Brand }) => (
-                  <Card
-                    className="bg-white"
-                    hoverable
-                    style={{ width: 240 }}
-                    cover={
-                      <img
-                        className="h-56 object-cover"
-                        alt={name}
-                        src={`http://localhost:5000/images/item/${id}/${Images?.[0].name}`}
-                      />
-                    }
-                  >
-                    <Link
-                      href={`/product-detail/${id}/${name}`}
-                      className="uppercase text-sm text-gray-700 block"
-                    >
-                      <span>{name}</span>
-                    </Link>
+        <div className="w-full flex flex-wrap justify-center">
+          <div className="w-full grid grid-cols-1 lg:grid-cols-5 gap-9">
+            {products.map(({ id, name, Images, Categorie, brandId, Brand }) => (
+              <Card
+                className="bg-white"
+                hoverable
+                style={{ width: 240 }}
+                cover={
+                  <img
+                    className="h-56 object-cover"
+                    alt={name}
+                    src={`http://localhost:5000/images/item/${id}/${Images?.[0].name}`}
+                  />
+                }
+              >
+                <Link
+                  href={`/product-detail/${id}/${name}`}
+                  className="uppercase text-sm text-gray-700 block"
+                >
+                  <span>{name}</span>
+                </Link>
 
-                    <div className="flex content-end justify-between py-2 lowercase text-xs text-gray-500 font-medium">
-                      <p className="bold">{Categorie?.name}</p>
-                      {brandId && <p>brand : {Brand?.name}</p>}
-                    </div>
-                  </Card>
-                )
-              )}
-            </div>
+                <div className="flex content-end justify-between py-2 lowercase text-xs text-gray-500 font-medium">
+                  <p className="bold">{Categorie?.name}</p>
+                  {brandId && <p>brand : {Brand?.name}</p>}
+                </div>
+              </Card>
+            ))}
           </div>
-          <Pagination
-            totalItems={totalProducts}
-            currentPage={currentPage}
-            itemsPerPage={20}
-            renderPageLink={(page) =>
-              `/products?page=${page}${
-                categories ? `&categories=${categories}` : ""
-              }${brands ? `&brands=${brands}` : ""}`
-            }
-          />
         </div>
+        <Pagination
+          totalItems={totalProducts}
+          currentPage={currentPage}
+          itemsPerPage={20}
+          renderPageLink={(page) =>
+            `/products?page=${page}${
+              categories ? `&categories=${categories}` : ""
+            }${brands ? `&brands=${brands}` : ""}`
+          }
+        />
       </LayoutWithSidebar>
     </>
   );

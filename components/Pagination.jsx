@@ -36,7 +36,7 @@ export default function Pagination({
                 pageNumber === currentPage
                   ? "text-gray-800 font-bold py-2 px-3 bg-gray-200 text-gray-800 "
                   : "text-gray-700"
-              } min-h-9.5 min-w-9.5 flex justify-center items-center py-2 px-3 text-sm`}
+              } min-h-9.5 min-w-9.5 flex justify-center items-center rounded-lg py-2 px-3 text-sm`}
             >
               {pageNumber ? pageNumber : null}
             </Link>

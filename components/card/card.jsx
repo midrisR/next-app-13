@@ -14,7 +14,6 @@ export default function Card({
   return (
     <div className="my-8 rounded shadow-lg bg-white duration-300 hover:-translate-y-1">
       <img src={src} alt={name} className="rounded w-full object-cover" />
-
       <div className="flex-1 mt-4 px-4">
         <Link href={url} className="uppercase text-sm text-gray-700 block">
           <span>{name}</span>

@@ -33,7 +33,7 @@ export default function FilterCategories({ categories, open }) {
     (name, value) => {
       const params = new URLSearchParams(searchParams);
       params.set(name, value);
-      params.set('page', 1);
+      params.set("page", 1);
       return params.toString();
     },
     [searchParams]
@@ -83,7 +83,7 @@ export default function FilterCategories({ categories, open }) {
 
   return (
     <>
-      <Disclosure.Button className="flex w-full items-center justify-between font-semibold text-sm bg-white py-3 text-black">
+      <Disclosure.Button className="flex w-full items-center justify-between font-semibold text-sm bg-white py-3 px-4 rounded text-black mb-12">
         Categories
         {open ? <HiChevronDown /> : <HiChevronUp />}
       </Disclosure.Button>
