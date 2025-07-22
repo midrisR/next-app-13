@@ -107,8 +107,8 @@ export default function Create({ setIsOpen }) {
           placeholder="Enter question"
         />
       </Form.Item>
-      <Form.Item label={null}>
-        <Button type="primary" onClick={onSubmit}>
+      <Form.Item>
+        <Button block type="primary" onClick={onSubmit} className="mt-2">
           Submit
         </Button>
       </Form.Item>

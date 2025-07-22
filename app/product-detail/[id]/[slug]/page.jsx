@@ -42,7 +42,7 @@ export default async function Page({ params }) {
             />
           </div>
           <div className="flex-1 space-y-4">
-            <div className="p-6 text-gray-800 space-y-6 prose prose-zinc lg:prose-xl prose-p:text-base">
+            <div className="p-6 text-gray-800 space-y-6 ">
               <h1 className="text-3xl font-bold text-gray-800">
                 {product.name}
               </h1>

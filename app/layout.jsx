@@ -12,6 +12,7 @@ export const metadata = {
 
 export default async function RootLayout({ children }) {
   const employe = await getEmploye();
+
   return (
     <html lang="en">
       <body className="bg-stone-100">
@@ -19,7 +20,7 @@ export default async function RootLayout({ children }) {
           <AntdRegistry>{children}</AntdRegistry>
           <ChatButton />
         </Providers>
-        <Footer employes={employe} />
+        {/* <Footer employes={employe} /> */}
       </body>
     </html>
   );

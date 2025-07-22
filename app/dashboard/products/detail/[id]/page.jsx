@@ -156,7 +156,7 @@ export default function Update({ params }) {
   };
 
   const updateProduct = async (formData) => {
-    const res = await fetch(`http://localhost:5000/api/api/product/${id}`, {
+    const res = await fetch(`http://localhost:5000/api/product/${id}`, {
       method: "PUT",
       body: formData,
       headers: {
