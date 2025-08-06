@@ -22,7 +22,6 @@ export default function SignIn() {
       callbackUrl: "/dashboard",
     });
     if (result?.error) {
-      console.log(result);
       setError((error) => ({
         ...error,
         error: true,
