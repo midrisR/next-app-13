@@ -1,6 +1,6 @@
 import { getProductsByCategorie } from "@/lib/api";
 import Card from "@/components/card/card";
-import LayoutWithSidebar from "@/components/LayoutWithSidebar";
+import LayoutWithSidebar from "@/components/filter";
 import Pagination from "@/components/Pagination";
 import Header from "@/components/header";
 export default async function Page({ params, searchParams }) {

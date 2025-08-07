@@ -1,12 +1,12 @@
 import Link from "next/link";
 import Pagination from "@/components/Pagination";
 import { getProducts } from "@/lib/api";
-import LayoutWithSidebar from "@/components/LayoutWithSidebar";
+import Filter from "@/components/filter";
 import Header from "@/components/header";
 import { Card } from "antd";
 export default async function Products({ searchParams }) {
   const { page, categories, brands } = await searchParams;
-  const perPage = 21;
+  const perPage = 20;
   const { products, currentPage, totalPages, totalProducts } =
     await getProducts({
       page,
@@ -18,11 +18,18 @@ export default async function Products({ searchParams }) {
   return (
     <>
       <Header />
-      <LayoutWithSidebar>
-        <div className="w-full flex flex-wrap justify-center">
-          <div className="w-full grid grid-cols-1 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
+      <div className="my-8 text-center">
+        <h1 className="font-bold text-3xl text-gray-700">PRODUCTS</h1>
+      </div>
+      <div className="flex flex-col lg:flex-row p-4 gap-6">
+        <div className="lg:w-72 w-1 ">
+          <Filter />
+        </div>
+        <div>
+          <div className="w-full grid grid-cols-1 lg:grid-cols-4 2xl:grid-cols-4 gap-4">
             {products.map(({ id, name, Images, Categorie, brandId, Brand }) => (
               <Card
+                key={id}
                 className="bg-white mx-auto"
                 hoverable
                 style={{ width: 240 }}
@@ -49,17 +56,17 @@ export default async function Products({ searchParams }) {
             ))}
           </div>
         </div>
-        <Pagination
-          totalItems={totalProducts}
-          currentPage={currentPage}
-          itemsPerPage={20}
-          renderPageLink={(page) =>
-            `/products?page=${page}${
-              categories ? `&categories=${categories}` : ""
-            }${brands ? `&brands=${brands}` : ""}`
-          }
-        />
-      </LayoutWithSidebar>
+      </div>
+      <Pagination
+        totalItems={totalProducts}
+        currentPage={currentPage}
+        itemsPerPage={20}
+        renderPageLink={(page) =>
+          `/products?page=${page}${
+            categories ? `&categories=${categories}` : ""
+          }${brands ? `&brands=${brands}` : ""}`
+        }
+      />
     </>
   );
 }

@@ -1,6 +1,8 @@
-export default function Footer({ employes }) {
+import { Layout } from "antd";
+const { Footer } = Layout;
+export default function ComFooter({ employes }) {
   return (
-    <footer className="bg-stone-200 text-slate-700 px-6 py-12">
+    <Footer>
       <div className="md:col-span-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mt-4 mb-32">
         {employes.map((employe, i) => (
           <div key={i}>
@@ -67,6 +69,6 @@ export default function Footer({ employes }) {
           referrerPolicy="no-referrer-when-downgrade"
         ></iframe>
       </div>
-    </footer>
+    </Footer>
   );
 }

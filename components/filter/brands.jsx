@@ -1,147 +1,104 @@
 import { useState, useCallback, useEffect } from "react";
-import { Listbox, Disclosure } from "@headlessui/react";
-import { HiChevronDown, HiChevronUp } from "react-icons/hi2";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 
-const START = 0;
-const LIMIT = 20;
-
-export default function FilterBrands({ brands, open }) {
-  const [list, setList] = useState(brands.slice(START, LIMIT));
-  const [expand, setExpand] = useState(false);
-  const [merk, setMerk] = useState([]);
-
+export default function FilterBrands({ brands }) {
+  const [selectedBrands, setSelectedBrands] = useState([]);
+  const [openSections, setOpenSections] = useState(true);
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
 
+  // Ambil parameter dari URL saat pertama render
   useEffect(() => {
-    if (searchParams.get("brands")) {
-      const toArray = searchParams.get("brands").split(",");
-      setMerk(toArray);
-    }
+    const brandsParam = searchParams.get("brands") || "";
+    const parsed = brandsParam
+      .split(",")
+      .map((b) => b.trim())
+      .filter((b) => b);
+    setSelectedBrands(parsed);
 
+    // Bersihkan query kosong dari URL
     const params = new URLSearchParams(searchParams);
     let modified = false;
-    for (const [key, value] of searchParams.entries()) {
+    for (const [key, value] of params.entries()) {
       if (!value) {
         params.delete(key);
         modified = true;
       }
     }
-
     if (modified) {
-      const deleted = params.toString();
-      if (deleted !== searchParams.toString()) {
-        router.push(window.location.pathname + "?" + deleted);
+      const updated = params.toString();
+      if (updated !== searchParams.toString()) {
+        router.push(`${pathname}?${updated}`);
       }
     }
   }, [searchParams, pathname]);
 
   const createQueryString = useCallback(
-    (name, value) => {
+    (name, values) => {
       const params = new URLSearchParams(searchParams);
-      params.set(name, value);
+      if (values.length > 0) {
+        params.set(name, values.join(","));
+      } else {
+        params.delete(name);
+      }
       params.set("page", 1);
       return params.toString();
     },
     [searchParams]
   );
 
-  const loadMore = () => {
-    setList(brands);
-    setExpand(true);
-  };
-
-  const hideMore = () => {
-    setList(brands.slice(START, LIMIT));
-    setExpand(false);
-  };
-
-  const checked = (name) => {
-    if (merk.indexOf(name) !== -1) {
-      return true;
-    }
-    return false;
-  };
-
   const capitalEachWords = (word) => {
-    const words = word.toLowerCase().split(" ");
-    const capital = words
-      .map((word) => {
-        return word[0].toUpperCase() + word.substring(1);
-      })
+    return word
+      .toLowerCase()
+      .split(" ")
+      .map((w) => w[0].toUpperCase() + w.slice(1))
       .join(" ");
-    return capital;
   };
 
   const handleChange = (e) => {
     const { value, checked, name } = e.target;
-    let newArr = [...merk];
-    if (checked) {
-      newArr = [...merk, value];
-      setMerk(newArr);
-    } else {
-      newArr.splice(merk.indexOf(value), 1);
-      setMerk(newArr);
-    }
-    router.push(
-      window.location.pathname + "?" + createQueryString(name, newArr)
-    );
+
+    const updatedBrands = checked
+      ? [...selectedBrands, value]
+      : selectedBrands.filter((b) => b !== value);
+
+    setSelectedBrands(updatedBrands);
+
+    const queryString = createQueryString(name, updatedBrands);
+    router.push(`${pathname}?${queryString}`);
+  };
+
+  const toggleSection = () => {
+    setOpenSections((prev) => !prev);
   };
 
   return (
-    <div className="bg-white">
-      <Disclosure.Button className="flex w-full items-center justify-between font-semibold text-sm bg-white py-3 px-4 rounded text-black">
-        Brands
-        {open ? <HiChevronDown /> : <HiChevronUp />}
-      </Disclosure.Button>
-      {!open && (
-        <div className="relative">
-          <Listbox
-            as="div"
-            className="mt-1 w-full py-1 text-base ring-opacity-5 focus:outline-none sm:text-sm border-b border-gray-200 pb-6 mb-6"
-          >
-            <div className="relative mt-1 flex flex-wrap justify-center mx-4">
-              {list.map((brand) => {
-                return (
-                  <div className="w-1/2 mb-6" key={brand.id}>
-                    <div className="flex items-center">
-                      <input
-                        id="filter-mobile-merk-1"
-                        name="brands"
-                        type="checkbox"
-                        defaultValue={brand.name}
-                        defaultChecked={checked(brand.name)}
-                        className="h-4 w-4 border-indigo-700 text-indigo-600 focus:ring-0"
-                        onChange={handleChange}
-                      />
-                      <label className="ml-3 min-w-0 flex-1">
-                        {capitalEachWords(brand.name)}
-                      </label>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-            {expand ? (
-              <button
-                className="w-full flex mt-4 justify-center items-center  space-x-3 text-gray-400"
-                onClick={hideMore}
-              >
-                <p className="text-sm block text-center">hide more</p>
-                <HiChevronUp />
-              </button>
-            ) : (
-              <button
-                className="w-full flex mt-4 pb-4 justify-center items-center  space-x-3 text-gray-400"
-                onClick={loadMore}
-              >
-                <p className="text-sm block text-center ">show more</p>
-                <HiChevronDown />
-              </button>
-            )}
-          </Listbox>
+    <div className="mb-6">
+      <div
+        className="flex justify-between items-center cursor-pointer"
+        onClick={toggleSection}
+      >
+        <p className="font-medium">Brand</p>
+        {openSections ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+      </div>
+
+      {openSections && (
+        <div className="mt-2 text-gray-700">
+          {brands.map((brand) => (
+            <label className="flex items-center gap-2 mt-3" key={brand.id}>
+              <input
+                type="checkbox"
+                name="brands"
+                value={brand.name}
+                checked={selectedBrands.includes(brand.name)}
+                onChange={handleChange}
+                className="accent-black"
+              />
+              {capitalEachWords(brand.name)}
+            </label>
+          ))}
         </div>
       )}
     </div>
