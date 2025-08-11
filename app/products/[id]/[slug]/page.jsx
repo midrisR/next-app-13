@@ -31,7 +31,7 @@ export default async function Page({ params, searchParams }) {
         </div>
 
         <div>
-          <div className="w-full grid grid-cols-1 lg:grid-cols-4 2xl:grid-cols-4 gap-4">
+          <div className="w-full grid grid-cols-1 lg:grid-cols-4 2xl:grid-cols-6 gap-4">
             <Suspense fallback={<Skeleton />}>
               {products.products.map(
                 ({ id, name, Images, Categorie, brandId, Brand }) => (
