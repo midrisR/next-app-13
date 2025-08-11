@@ -1,6 +1,6 @@
 import { getProductsByCategorie } from "@/lib/api";
 import Card from "@/components/card/card";
-import LayoutWithSidebar from "@/components/filter";
+import Filter from "@/components/filter";
 import Pagination from "@/components/Pagination";
 import Header from "@/components/header";
 export default async function Page({ params, searchParams }) {
@@ -17,25 +17,30 @@ export default async function Page({ params, searchParams }) {
   return (
     <>
       <Header />
-      <LayoutWithSidebar>
-        <div className="overflow-x-auto">
-          <div className="w-full flex flex-wrap justify-center">
-            <div className="w-full grid grid-cols-4 lg:grid-cols-3 gap-9">
-              {products.products.map(
-                ({ id, name, Images, Categorie, brandId, Brand }) => (
-                  <Card
-                    key={id}
-                    id={id}
-                    name={name}
-                    url={`/product-detail/${id}/${name}`}
-                    src={`https://api.projectme.my.id/images/item/${id}/${Images?.[0].name}`}
-                    Categorie={Categorie}
-                    brandId={brandId}
-                    Brand={Brand}
-                  />
-                )
-              )}
-            </div>
+      <div className="my-8 text-center">
+        <h1 className="font-bold text-3xl text-gray-700">PRODUCTS</h1>
+      </div>
+      <div className="flex flex-col lg:flex-row p-4 gap-6">
+        <div className="lg:w-72 w-1 ">
+          <Filter />
+        </div>
+
+        <div>
+          <div className="w-full grid grid-cols-1 lg:grid-cols-4 2xl:grid-cols-4 gap-4">
+            {products.products.map(
+              ({ id, name, Images, Categorie, brandId, Brand }) => (
+                <Card
+                  key={id}
+                  id={id}
+                  name={name}
+                  url={`/product-detail/${id}/${name}`}
+                  src={`https://api.projectme.my.id/images/item/${id}/${Images?.[0].name}`}
+                  Categorie={Categorie}
+                  brandId={brandId}
+                  Brand={Brand}
+                />
+              )
+            )}
           </div>
           <Pagination
             totalItems={products.totalProducts}
@@ -48,7 +53,7 @@ export default async function Page({ params, searchParams }) {
             }
           />
         </div>
-      </LayoutWithSidebar>
+      </div>
     </>
   );
 }
