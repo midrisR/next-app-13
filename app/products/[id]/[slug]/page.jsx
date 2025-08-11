@@ -1,10 +1,11 @@
+import { Suspense } from "react";
 import { getProductsByCategorie, getProducts } from "@/lib/api";
 import Card from "@/components/card/card";
 import Filter from "@/components/filter";
 import Pagination from "@/components/Pagination";
 import Header from "@/components/header";
 export const revalidate = 60;
-
+import { Skeleton } from "antd";
 export default async function Page({ params, searchParams }) {
   const { id, slug } = await params;
   const { page, brands, categories } = await searchParams;
@@ -31,20 +32,22 @@ export default async function Page({ params, searchParams }) {
 
         <div>
           <div className="w-full grid grid-cols-1 lg:grid-cols-4 2xl:grid-cols-4 gap-4">
-            {products.products.map(
-              ({ id, name, Images, Categorie, brandId, Brand }) => (
-                <Card
-                  key={id}
-                  id={id}
-                  name={name}
-                  url={`/product-detail/${id}/${name}`}
-                  src={`https://api.projectme.my.id/images/item/${id}/${Images?.[0].name}`}
-                  Categorie={Categorie}
-                  brandId={brandId}
-                  Brand={Brand}
-                />
-              )
-            )}
+            <Suspense fallback={<Skeleton />}>
+              {products.products.map(
+                ({ id, name, Images, Categorie, brandId, Brand }) => (
+                  <Card
+                    key={id}
+                    id={id}
+                    name={name}
+                    url={`/product-detail/${id}/${name}`}
+                    src={`https://api.projectme.my.id/images/item/${id}/${Images?.[0].name}`}
+                    Categorie={Categorie}
+                    brandId={brandId}
+                    Brand={Brand}
+                  />
+                )
+              )}
+            </Suspense>
           </div>
           <Pagination
             totalItems={products.totalProducts}

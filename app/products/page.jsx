@@ -27,14 +27,9 @@ export default async function Products({ searchParams }) {
         <div className="lg:w-72 w-1 ">
           <Filter />
         </div>
-<<<<<<< HEAD
-        <div className="w-full">
-          <div className="grid grid-cols-1 lg:grid-cols-4 2xl:grid-cols-4 gap-4">
-=======
 
         <div>
-          <div className="w-full grid grid-cols-1 lg:grid-cols-4 2xl:grid-cols-4 gap-4">
->>>>>>> 1b29d8b0c20fc8fdae008f38c9e61fcbc6a4833d
+          <div className="w-full grid grid-cols-1 lg:grid-cols-4 2xl:grid-cols-6 gap-4">
             {products.map(({ id, name, Images, Categorie, brandId, Brand }) => (
               <Card
                 key={id}
@@ -42,8 +37,9 @@ export default async function Products({ searchParams }) {
                 hoverable
                 cover={
                   <img
-                    className="h-56"
+                    className="h-56 object-cover"
                     alt={name}
+                    width={240}
                     src={`https://api.projectme.my.id/images/item/${id}/${Images?.[0].name}`}
                   />
                 }
@@ -62,18 +58,18 @@ export default async function Products({ searchParams }) {
               </Card>
             ))}
           </div>
+          <Pagination
+            totalItems={totalProducts}
+            currentPage={currentPage}
+            itemsPerPage={20}
+            renderPageLink={(page) =>
+              `/products?page=${page}${
+                categories ? `&categories=${categories}` : ""
+              }${brands ? `&brands=${brands}` : ""}`
+            }
+          />
         </div>
       </div>
-      <Pagination
-        totalItems={totalProducts}
-        currentPage={currentPage}
-        itemsPerPage={20}
-        renderPageLink={(page) =>
-          `/products?page=${page}${
-            categories ? `&categories=${categories}` : ""
-          }${brands ? `&brands=${brands}` : ""}`
-        }
-      />
     </>
   );
 }
