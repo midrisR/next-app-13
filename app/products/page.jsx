@@ -25,17 +25,16 @@ export default async function Products({ searchParams }) {
         <div className="lg:w-72 w-1 ">
           <Filter />
         </div>
-        <div>
-          <div className="w-full grid grid-cols-1 lg:grid-cols-4 2xl:grid-cols-4 gap-4">
+        <div className="w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-4 2xl:grid-cols-4 gap-4">
             {products.map(({ id, name, Images, Categorie, brandId, Brand }) => (
               <Card
                 key={id}
                 className="bg-white mx-auto"
                 hoverable
-                style={{ width: 240 }}
                 cover={
                   <img
-                    className="h-56 object-cover"
+                    className="h-56"
                     alt={name}
                     src={`https://api.projectme.my.id/images/item/${id}/${Images?.[0].name}`}
                   />

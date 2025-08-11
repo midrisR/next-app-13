@@ -18,7 +18,6 @@ export default async function RootLayout({ children }) {
       <body className="bg-stone-100">
         <Providers>
           <AntdRegistry>{children}</AntdRegistry>
-
           <FooterWrapper employes={employe} />
         </Providers>
       </body>
