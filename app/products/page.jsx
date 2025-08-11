@@ -4,6 +4,8 @@ import { getProducts } from "@/lib/api";
 import Filter from "@/components/filter";
 import Header from "@/components/header";
 import { Card } from "antd";
+export const revalidate = 60;
+
 export default async function Products({ searchParams }) {
   const { page, categories, brands } = await searchParams;
   const perPage = 20;
@@ -25,8 +27,14 @@ export default async function Products({ searchParams }) {
         <div className="lg:w-72 w-1 ">
           <Filter />
         </div>
+<<<<<<< HEAD
         <div className="w-full">
           <div className="grid grid-cols-1 lg:grid-cols-4 2xl:grid-cols-4 gap-4">
+=======
+
+        <div>
+          <div className="w-full grid grid-cols-1 lg:grid-cols-4 2xl:grid-cols-4 gap-4">
+>>>>>>> 1b29d8b0c20fc8fdae008f38c9e61fcbc6a4833d
             {products.map(({ id, name, Images, Categorie, brandId, Brand }) => (
               <Card
                 key={id}

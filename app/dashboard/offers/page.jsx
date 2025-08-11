@@ -4,6 +4,8 @@ import Table from "./components/table";
 import Create from "./components/create";
 import { getOffers, getVendor } from "@/lib/api";
 
+export const revalidate = 60;
+
 export default async function Offers() {
   const { accessToken } = await getServerSession(authOptions);
   const [offers, vendors] = await Promise.all([getOffers(), getVendor()]);

@@ -3,6 +3,9 @@ import Markdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import ImageSlider from "@/components/image/ImageSlider";
 import Header from "@/components/header";
+
+export const revalidate = 60;
+
 export async function generateMetadata({ params }) {
   const { id } = await params;
   const { product } = await getProductsById(id);
