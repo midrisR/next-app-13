@@ -1,8 +1,10 @@
-import { getProductsByCategorie } from "@/lib/api";
+import { getProductsByCategorie, getProducts } from "@/lib/api";
 import Card from "@/components/card/card";
 import Filter from "@/components/filter";
 import Pagination from "@/components/Pagination";
 import Header from "@/components/header";
+export const revalidate = 60;
+
 export default async function Page({ params, searchParams }) {
   const { id, slug } = await params;
   const { page, brands, categories } = await searchParams;
@@ -13,6 +15,8 @@ export default async function Page({ params, searchParams }) {
     categories,
     brands
   );
+  const x = await getProducts(1);
+  console.log(x);
 
   return (
     <>

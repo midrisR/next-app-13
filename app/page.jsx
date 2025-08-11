@@ -6,6 +6,8 @@ import Link from "next/link";
 const BannerSlider = dynamic(() => import("@/components/image/banner"), {
   ssr: false, // ⚠️ ini penting agar tidak error di server
 });
+export const revalidate = 60;
+
 export default async function Home() {
   const categories = await getCategories();
   const banner = await getBanner();

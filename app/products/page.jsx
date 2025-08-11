@@ -4,6 +4,8 @@ import { getProducts } from "@/lib/api";
 import Filter from "@/components/filter";
 import Header from "@/components/header";
 import { Card } from "antd";
+export const revalidate = 60;
+
 export default async function Products({ searchParams }) {
   const { page, categories, brands } = await searchParams;
   const perPage = 20;
