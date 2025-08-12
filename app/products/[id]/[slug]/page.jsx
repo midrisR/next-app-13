@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { getProductsByCategorie, getProducts } from "@/lib/api";
+import { getProductsByCategorie } from "@/lib/api";
 import Card from "@/components/card/card";
 import Filter from "@/components/filter";
 import Pagination from "@/components/Pagination";
@@ -16,8 +16,6 @@ export default async function Page({ params, searchParams }) {
     categories,
     brands
   );
-  const x = await getProducts(1);
-  console.log(x);
 
   return (
     <>

@@ -31,31 +31,30 @@ export default async function Products({ searchParams }) {
         <div>
           <div className="w-full grid grid-cols-1 lg:grid-cols-4 2xl:grid-cols-6 gap-4">
             {products.map(({ id, name, Images, Categorie, brandId, Brand }) => (
-              <Card
+              <Link
                 key={id}
-                className="bg-white mx-auto"
-                hoverable
-                cover={
-                  <img
-                    className="h-56 object-cover"
-                    alt={name}
-                    width={240}
-                    src={`https://api.projectme.my.id/images/item/${id}/${Images?.[0].name}`}
-                  />
-                }
+                href={`/product-detail/${id}/${name}`}
+                className="uppercase text-sm text-gray-700 block"
               >
-                <Link
-                  href={`/product-detail/${id}/${name}`}
-                  className="uppercase text-sm text-gray-700 block"
+                <Card
+                  className="bg-white mx-auto"
+                  hoverable
+                  cover={
+                    <img
+                      className="h-56 object-cover"
+                      alt={name}
+                      width={240}
+                      src={`https://api.projectme.my.id/images/item/${id}/${Images?.[0].name}`}
+                    />
+                  }
                 >
                   <span>{name}</span>
-                </Link>
-
-                <div className="flex content-end justify-between py-2 lowercase text-xs text-gray-500 font-medium">
-                  <p className="bold">{Categorie?.name}</p>
-                  {brandId && <p>brand : {Brand?.name}</p>}
-                </div>
-              </Card>
+                  <div className="flex content-end justify-between py-2 lowercase text-xs text-gray-500 font-medium">
+                    <p className="bold">{Categorie?.name}</p>
+                    {brandId && <p>brand : {Brand?.name}</p>}
+                  </div>
+                </Card>
+              </Link>
             ))}
           </div>
           <Pagination
