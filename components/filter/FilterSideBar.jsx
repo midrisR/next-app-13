@@ -103,7 +103,7 @@ export default function FilterSideBar({ brands, categories, onReset }) {
           <div className="absolute inset-0 bg-black/40" onClick={close} />
 
           {/* Panel */}
-          <div className="absolute inset-y-0 right-0 w-80 max-w-[85vw]">
+          <div className="absolute inset-y-0 right-0 max-w-[85vw]">
             <div className="h-full translate-x-0 animate-[slideIn_.2s_ease-out]">
               {SidebarContent}
             </div>
