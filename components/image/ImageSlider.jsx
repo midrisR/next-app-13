@@ -1,7 +1,6 @@
 "use client";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
-import Image from "next/image";
 import OptimizeImage from "./OptimizeImage";
 import "swiper/css";
 import "swiper/css/navigation";

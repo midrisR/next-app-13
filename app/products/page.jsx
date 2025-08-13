@@ -4,8 +4,8 @@ import { getProducts } from "@/lib/api";
 import Filter from "@/components/filter";
 import Header from "@/components/header";
 import { Card } from "antd";
+import OptimizeImage from "@/components/image/OptimizeImage";
 export const revalidate = 60;
-
 export default async function Products({ searchParams }) {
   const { page, categories, brands } = await searchParams;
   const perPage = 20;
@@ -40,8 +40,7 @@ export default async function Products({ searchParams }) {
                   className="bg-white mx-auto"
                   hoverable
                   cover={
-                    <img
-                      className="h-56 object-cover"
+                    <OptimizeImage
                       alt={name}
                       width={240}
                       src={`https://api.projectme.my.id/images/item/${id}/${Images?.[0].name}`}

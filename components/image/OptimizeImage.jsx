@@ -4,7 +4,7 @@ import Image from "next/image";
  * ratio bisa "1/1", "16/9", "4/3", dst.
  * default "1/1"
  */
-export default function ProductImage({
+export default function OptimizeImage({
   src,
   alt,
   ratio = "1/1",
